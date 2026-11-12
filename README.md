@@ -22,6 +22,25 @@ personas (ver «Sumar a otra persona»).
 
 ---
 
+## Diseño
+
+La idea central es el **disco de pesas**, que en la mesa es el plato. La proteína del día se muestra
+como un disco que se llena, con cifras anchas «grabadas». El descanso entre series es un disco que se
+vacía, y marcar una serie «carga» el disco. Los colores salen del código de los discos de competición y
+siempre significan lo mismo:
+
+| Color | Disco | Significa |
+| --- | --- | --- |
+| Rojo | 25 kg | Proteína, acciones y series hechas |
+| Azul | 20 kg | Calorías (y los días de pierna) |
+| Amarillo | 15 kg | Hidratos y el peso de trabajo de cada ejercicio |
+| Blanco | 5 kg | Grasas |
+| Verde | 10 kg | Objetivo cumplido |
+
+Tiene modo claro y oscuro (sigue al teléfono). Las variables de diseño están en `src/estilos/tokens.css`.
+
+---
+
 ## Arquitectura
 
 ```
@@ -87,7 +106,7 @@ pruebas/        servidor de prueba y pruebas de punta a punta (Playwright)
 | Firebase Auth + Firestore + Hosting | Gratis en el plan Spark, sincroniza entre dispositivos y trae caché sin señal. |
 | Cloudflare Workers | Servidor mínimo y gratuito (sin tarjeta) para guardar la clave de la IA. |
 | API de Claude | Estimación de comidas: Haiku 5.5 para texto, Sonnet 5.5 para fotos. |
-| Fuentes Barlow / Barlow Condensed (@fontsource) | Servidas desde el mismo sitio: sin pedidos a terceros. |
+| Archivo, tipografía variable (@fontsource-variable) | Una sola familia y un solo archivo: ancha y pesada para las cifras, normal para leer. Se sirve desde el mismo sitio. |
 | Vitest, Playwright, axe-core, ESLint | Pruebas de lógica, de punta a punta, de accesibilidad y revisión de código. |
 
 No hay librerías de gráficos, de estado global ni de estilos: los gráficos son SVG propios y los estilos,
@@ -148,8 +167,8 @@ creá `.env.local` (ver más abajo) y corré `npm run dev`.
    ```
 
    El sitio queda en `https://TU-PROYECTO.web.app`. `firestore` publica también las reglas.
-7. **Pasar tus datos del diario anterior**: en el sitio, *Ajustes → Importar una copia* y elegí el
-   archivo `libreta-migracion-2026-11-12.libreta.json` (te lo pasé aparte; no está en el repositorio).
+7. Entrá con tu email y contraseña. Arrancás con todo vacío; en *Ajustes* podés poner tu nombre y
+   revisar los objetivos.
 
 ### Recomendado
 
@@ -205,7 +224,7 @@ Si la CSP bloquea al Worker porque usás un dominio propio en vez de `workers.de
 
 ```bash
 npm run check                 # ESLint + TypeScript + 26 pruebas de lógica (Vitest)
-npm run test:e2e              # 69 pruebas de punta a punta (Playwright, Chromium; 1 es de teclado y solo corre en escritorio)
+npm run test:e2e              # 71 pruebas de punta a punta (Playwright, Chromium; 1 es de teclado y solo corre en escritorio)
 cd ia-worker && npm run check # tipos + 24 pruebas del Worker + empaquetado de prueba de Wrangler
 ```
 
@@ -213,7 +232,8 @@ Las pruebas de punta a punta corren sobre el sitio compilado, servido con los mi
 Firebase Hosting (incluida la CSP), en tamaño de teléfono y de escritorio, con la fecha fija en el lunes
 16/11/2026. Fallan ante cualquier error de consola, violación de la CSP o pedido a otro sitio. Cubren:
 
-- cada pantalla: carga, sin scroll horizontal (320, 390, 768 y 1280 px) y accesibilidad con axe-core;
+- cada pantalla: carga, sin scroll horizontal (320, 390, 768 y 1280 px) y accesibilidad con axe-core,
+  en modo claro y oscuro;
 - rutina: validaciones, marcar y corregir series, descanso, arrastre de peso, recarga, semana siguiente,
   notas, animaciones y entrada en calor;
 - comidas: lista, cantidades, quitar y deshacer, manual con validación, «Mis alimentos», IA por texto y
@@ -257,4 +277,4 @@ Firebase Hosting (incluida la CSP), en tamaño de teléfono y de escritorio, con
 ---
 
 Fotos de los ejercicios: [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) (dominio
-público). Fuentes Barlow y Barlow Condensed (SIL Open Font License).
+público). Tipografía Archivo (SIL Open Font License).

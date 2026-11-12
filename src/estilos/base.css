@@ -15,7 +15,9 @@ body {
   color: var(--tinta);
   font-family: var(--fuente-texto);
   font-size: 16px;
-  line-height: 1.45;
+  line-height: 1.5;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -23,9 +25,9 @@ h1,
 h2,
 h3 {
   margin: 0;
-  font-family: var(--fuente-display);
   font-weight: 700;
-  line-height: 1.08;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
@@ -50,7 +52,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid var(--acento);
+  outline: 3px solid var(--acento);
   outline-offset: 2px;
 }
 
@@ -74,30 +76,32 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
+/* Cifras «grabadas», como los números de un disco. */
+.grabado {
+  font-stretch: var(--ancho-grabado);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
 /* ---------- Tipografía de la app ---------- */
 
 .ceja {
-  font-family: var(--fuente-display);
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--acento);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--tenue);
 }
 
 .rotulo {
-  font-family: var(--fuente-display);
-  font-weight: 600;
   font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: 600;
   color: var(--tenue);
 }
 
 .titulo-seccion {
-  font-size: 16px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 19px;
+  font-weight: 700;
 }
 
 .tenue {
@@ -108,19 +112,24 @@ textarea {
 
 .tarjeta {
   background: var(--superficie);
-  border: 1px solid var(--linea);
-  border-radius: var(--radio);
-  padding: 14px;
+  border-radius: var(--radio-panel);
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tarjeta {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.04);
+  }
 }
 
 .pila {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 /* ---------- Botones ---------- */
@@ -129,45 +138,56 @@ textarea {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 10px 14px;
-  border-radius: var(--radio-chico);
-  border: 1px solid var(--linea);
-  background: var(--superficie);
+  gap: 8px;
+  min-height: 48px;
+  padding: 11px 18px;
+  border-radius: 14px;
+  border: 0;
+  background: var(--tinte);
   color: var(--tinta);
-  font-family: var(--fuente-display);
-  font-weight: 700;
-  font-size: 15px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.2;
   text-decoration: none;
+  text-align: center;
   cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
 }
 
 .boton:hover {
-  border-color: var(--tenue);
+  background: var(--tinte-fuerte);
+}
+
+.boton:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .boton:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: default;
 }
 
 .boton.primario {
   background: var(--acento);
-  border-color: var(--acento);
   color: var(--acento-tinta);
 }
 
+.boton.primario:hover {
+  background: color-mix(in srgb, var(--acento) 88%, var(--tinta));
+}
+
 .boton.chico {
-  min-height: 36px;
-  padding: 7px 12px;
-  font-size: 14px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 15px;
 }
 
 .boton.peligro {
-  color: var(--acento);
+  color: var(--acento-texto);
+  background: var(--acento-suave);
 }
 
 .boton.ancho {
@@ -182,9 +202,13 @@ textarea {
   font: inherit;
   font-weight: 600;
   text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.enlace:hover {
   text-decoration: underline;
   text-underline-offset: 3px;
-  cursor: pointer;
 }
 
 /* ---------- Formularios ---------- */
@@ -192,38 +216,57 @@ textarea {
 .campo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 }
 
 .campo > label,
 .campo > .rotulo {
-  font-family: var(--fuente-display);
+  font-size: 14px;
   font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  color: var(--tenue);
+}
+
+.campo-leyenda {
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--tenue);
 }
 
 .entrada {
   width: 100%;
   min-width: 0;
-  min-height: 44px;
+  min-height: 48px;
   font-size: 16px;
-  background: var(--superficie);
-  border: 1px solid var(--linea);
+  background: var(--tinte);
+  border: 1.5px solid transparent;
   border-radius: var(--radio-chico);
-  padding: 9px 11px;
+  padding: 10px 13px;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.entrada::placeholder {
+  color: var(--tenue);
+  opacity: 0.8;
+}
+
+.entrada:focus {
+  outline: none;
+  border-color: var(--acento);
+  background: var(--superficie);
 }
 
 textarea.entrada {
   resize: vertical;
-  min-height: 72px;
+  min-height: 84px;
 }
 
 .entrada[aria-invalid='true'] {
   border-color: var(--acento);
+  background: var(--acento-suave);
 }
 
 .ayuda {
@@ -240,7 +283,7 @@ textarea.entrada {
 .grilla-campos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 /* ---------- Chips ---------- */
@@ -249,14 +292,15 @@ textarea.entrada {
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
-  padding: 6px 11px;
+  padding: 6px 12px;
   border-radius: 999px;
-  background: var(--superficie-2);
+  background: var(--tinte);
   font-size: 14px;
+  font-weight: 500;
 }
 
 .chip b {
-  font-weight: 600;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
@@ -276,6 +320,7 @@ textarea.entrada {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
@@ -286,13 +331,15 @@ textarea.entrada {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 16px;
+  margin: 4px 0 10px;
 }
 
 .cabecera h1 {
-  font-size: 34px;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
+  font-size: 32px;
+  font-stretch: var(--ancho-titulo);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
 }
 
 .cabecera h1 .acento {
@@ -301,12 +348,12 @@ textarea.entrada {
 
 .cabecera .sub {
   color: var(--tenue);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 @media (max-width: 380px) {
   .cabecera h1 {
-    font-size: 30px;
+    font-size: 28px;
   }
 }
 
@@ -319,9 +366,8 @@ textarea.entrada {
 }
 
 .fila-titulo h2 {
-  font-size: 16px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 19px;
+  font-weight: 700;
 }
 
 .fila-titulo .tenue {
@@ -339,19 +385,20 @@ textarea.entrada {
 
 .lista-reglas li {
   position: relative;
-  padding-left: 16px;
+  padding-left: 20px;
   font-size: 15px;
 }
 
+/* Viñeta en forma de disco: aro con agujero. */
 .lista-reglas li::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 0.6em;
-  width: 6px;
-  height: 6px;
+  top: 0.42em;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--acento);
+  border: 3px solid var(--acento);
 }
 
 .desplegable > summary {
@@ -362,11 +409,8 @@ textarea.entrada {
   justify-content: space-between;
   gap: 12px;
   min-height: 44px;
-  font-family: var(--fuente-display);
   font-weight: 700;
-  font-size: 16px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 17px;
 }
 
 .desplegable > summary::-webkit-details-marker {
@@ -376,6 +420,7 @@ textarea.entrada {
 .desplegable > summary svg {
   transition: transform 0.2s ease;
   flex: none;
+  color: var(--tenue);
 }
 
 .desplegable[open] > summary svg {
@@ -391,17 +436,14 @@ textarea.entrada {
 .tabla th,
 .tabla td {
   text-align: left;
-  padding: 8px 6px;
+  padding: 10px 6px;
   border-bottom: 1px solid var(--linea);
   vertical-align: top;
 }
 
 .tabla thead th {
-  font-family: var(--fuente-display);
   font-weight: 600;
   font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--tenue);
 }
 

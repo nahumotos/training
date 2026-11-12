@@ -22,6 +22,15 @@ test.describe('cada pantalla', () => {
     });
   }
 
+  test('en modo oscuro también es accesible (contraste)', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    for (const { ruta } of RUTAS) {
+      await page.goto(ruta);
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      await accesible(page);
+    }
+  });
+
   test('en tablet (768 px) tampoco hay scroll horizontal', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
     for (const { ruta } of RUTAS) {

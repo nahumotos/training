@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Disco } from '../componentes/Disco';
 import { DIAS_HISTORIAL } from '../config';
 import { llegaProteina, proximaComida, totalesDia } from '../dominio/comidas';
 import { capitalizar, fechaLarga, lunesDe, sumarDias } from '../dominio/fechas';
@@ -34,7 +35,7 @@ export function Hoy() {
   return (
     <div className="pila">
       <header className="cabecera">
-        <p className="ceja">{perfil.nombre ? capitalizar(fechaLarga(hoy)) : 'Hoy'}</p>
+        {perfil.nombre && <p className="ceja">{capitalizar(fechaLarga(hoy))}</p>}
         <h1>{saludo}</h1>
       </header>
 
@@ -59,34 +60,32 @@ export function Hoy() {
             Ver el día
           </Link>
         </div>
-        <div className={estilos.cifras}>
-          <div>
-            <span className="rotulo">Proteína</span>
-            <p className={estilos.cifra}>
-              <b className="num" data-ok={okP || undefined}>
-                {num(totales.p)}
-              </b>{' '}
-              <span>/ {o.proteina.obj} g</span>
-            </p>
-          </div>
-          <div>
-            <span className="rotulo">Calorías</span>
-            <p className={estilos.cifra}>
-              <b className="num">{num(totales.k)}</b>{' '}
-              <span>
-                / {num(o.kcal.min)}–{num(o.kcal.max)}
-              </span>
-            </p>
-          </div>
-          <div>
-            <span className="rotulo">Con proteína</span>
-            <p className={estilos.cifra}>
-              <b className="num" data-ok={totales.comidasConProteina >= 4 || undefined}>
-                {totales.comidasConProteina}
-              </b>{' '}
-              <span>/ 4 comidas</span>
-            </p>
-          </div>
+        <div className={estilos.resumen}>
+          <Disco valor={totales.p} objetivo={o.proteina.obj} banda={o.proteina} ok={okP}>
+            <b className={`grabado ${estilos.cifraDisco}`}>{num(totales.p)}</b>{' '}
+            <span className={estilos.deDisco}>de {o.proteina.obj} g</span>{' '}
+            <span className={estilos.nombreDisco}>de proteína</span>
+          </Disco>
+          <dl className={estilos.datos}>
+            <div>
+              <dt>Calorías</dt>
+              <dd>
+                <b className="grabado">{num(totales.k)}</b>{' '}
+                <span>
+                  de {num(o.kcal.min)}–{num(o.kcal.max)}
+                </span>
+              </dd>
+            </div>
+            <div>
+              <dt>Comidas con proteína</dt>
+              <dd>
+                <b className="grabado" data-ok={totales.comidasConProteina >= 4 || undefined}>
+                  {totales.comidasConProteina}
+                </b>{' '}
+                <span>de 4</span>
+              </dd>
+            </div>
+          </dl>
         </div>
         <div className={estilos.accionesComida}>
           {proxima ? (
@@ -108,31 +107,31 @@ export function Hoy() {
         <div className="fila-titulo">
           <h2 id="hoy-semana">Esta semana</h2>
           <Link to="/progreso" className="enlace">
-            Progreso
+            Ver progreso
           </Link>
         </div>
         <ul className={estilos.semana}>
           <li>
-            <b className="num">
+            <b className="grabado">
               {resumen.entrenamientos.hechos}/{resumen.entrenamientos.total}
             </b>{' '}
             <span>entrenamientos</span>
           </li>
           <li>
-            <b className="num">
+            <b className="grabado">
               {resumen.diasConProteina}/{Math.max(resumen.diasCargados, 1)}
             </b>{' '}
             <span>días con {o.proteina.min} g o más</span>
           </li>
           <li>
-            <b className="num">{resumen.pasosProm === null ? '—' : num(resumen.pasosProm)}</b>{' '}
+            <b className="grabado">{resumen.pasosProm === null ? '—' : num(resumen.pasosProm)}</b>{' '}
             <span>pasos promedio</span>
           </li>
         </ul>
         {etapa && (
           <div className={estilos.etapa}>
             <span className="rotulo">
-              Hábitos · etapa {etapa.num} (semanas {etapa.semanas})
+              Hábitos de la etapa {etapa.num}, semanas {etapa.semanas}
             </span>
             <ul className="lista-reglas">
               {etapa.habitos.map((h) => (

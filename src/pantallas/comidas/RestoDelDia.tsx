@@ -125,7 +125,7 @@ export function RestoDelDia({ dia, objetivoAgua, cambiar }: { dia: Dia; objetivo
       </div>
 
       <fieldset className={estilos.energia}>
-        <legend className="rotulo">Energía</legend>
+        <legend className="campo-leyenda">Energía</legend>
         <div className={estilos.segmentos}>
           {[1, 2, 3, 4, 5].map((n) => (
             <button

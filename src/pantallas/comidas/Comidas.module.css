@@ -5,17 +5,21 @@
   grid-template-columns: 44px minmax(0, 1fr) 44px;
   gap: 8px;
   align-items: center;
+  margin: 4px 0 6px;
 }
 
 .flecha {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
-  border: 1px solid var(--linea);
+  border-radius: 50%;
   background: var(--superficie);
   display: grid;
   place-items: center;
   color: var(--tinta);
+}
+
+.flecha:hover {
+  background: var(--tinte-fuerte);
 }
 
 .flecha[data-deshabilitada] {
@@ -31,8 +35,10 @@
 }
 
 .fecha h1 {
-  font-size: 26px;
-  text-transform: uppercase;
+  font-size: 24px;
+  font-weight: 750;
+  font-stretch: var(--ancho-titulo);
+  letter-spacing: -0.015em;
   overflow-wrap: anywhere;
 }
 
@@ -44,8 +50,38 @@
 
 .metricas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 18px;
+  align-items: start;
+}
+
+.proteina {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 150px;
+}
+
+.proteina .estadoMetrica {
+  text-align: center;
+}
+
+.cifraDisco {
+  font-size: 38px;
+}
+
+.deDisco {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.otras {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
 }
 
 .metrica {
@@ -58,27 +94,24 @@
 .cifra {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 2px 6px;
   flex-wrap: wrap;
 }
 
 .cifra b {
-  font-family: var(--fuente-display);
-  font-weight: 700;
-  font-size: 44px;
-  line-height: 1;
+  font-size: 30px;
 }
 
 .cifra span {
   color: var(--tenue);
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .medidor {
   position: relative;
-  height: 12px;
+  height: 10px;
   border-radius: 999px;
-  background: var(--superficie-2);
+  background: var(--tinte);
   overflow: hidden;
 }
 
@@ -86,10 +119,6 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  background: var(--banda-p);
-}
-
-.medidor[data-tipo='k'] .banda {
   background: var(--banda-k);
 }
 
@@ -99,21 +128,56 @@
   top: 0;
   bottom: 0;
   border-radius: 999px;
-  background: var(--acento);
+  background: var(--kcal);
   transition: width 0.3s ease;
 }
 
-.medidor[data-tipo='k'] .relleno {
-  background: var(--kcal);
+.medidor[data-tipo='c'] .relleno {
+  background: var(--hidratos-disco);
+}
+
+.medidor[data-tipo='g'] .relleno {
+  background: var(--grasas-disco);
+}
+
+.medidor[data-tipo='c'] .banda,
+.medidor[data-tipo='g'] .banda {
+  background: var(--tinte-fuerte);
 }
 
 .relleno[data-ok] {
   background: var(--bien);
 }
 
+/* Hidratos y grasas: nombre, gramos, barra fina y rango. */
+.macro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 14px;
+}
+
+.macro b {
+  font-weight: 700;
+  justify-self: end;
+}
+
+.macro .medidor {
+  grid-column: 1 / -1;
+  height: 6px;
+}
+
+.macro .tenue {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  margin-top: -2px;
+}
+
 .estadoMetrica {
   font-size: 14px;
   color: var(--tenue);
+  line-height: 1.35;
 }
 
 .ok {
@@ -121,19 +185,22 @@
   font-weight: 600;
 }
 
-.macros {
-  font-size: 14px;
-}
-
-.macros b {
-  font-weight: 600;
-}
-
 .consejo {
   font-size: 14px;
   color: var(--tenue);
-  border-top: 1px solid var(--linea);
-  padding-top: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radio);
+  background: var(--superficie-2);
+}
+
+@media (max-width: 360px) {
+  .metricas {
+    grid-template-columns: 1fr;
+  }
+
+  .proteina {
+    max-width: none;
+  }
 }
 
 /* ---------- Comidas ---------- */
@@ -154,9 +221,8 @@
 
 .cabComida h2 {
   display: inline;
-  font-size: 21px;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-size: 19px;
+  font-weight: 700;
 }
 
 .hora {
@@ -166,14 +232,15 @@
 }
 
 .totalComida {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--tenue);
 }
 
 .totalComida b {
   color: var(--tinta);
-  font-family: var(--fuente-display);
-  font-size: 18px;
+  font-weight: 800;
+  font-stretch: var(--ancho-grabado);
+  font-size: 17px;
 }
 
 .items,
@@ -194,15 +261,19 @@
   width: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 1px 12px;
-  padding: 10px 0;
+  gap: 2px 12px;
+  padding: 12px 0;
   background: none;
   border: 0;
   color: inherit;
   text-align: left;
   cursor: pointer;
   font: inherit;
-  min-height: 52px;
+  min-height: 56px;
+}
+
+.item[aria-expanded='true'] .nombreItem {
+  color: var(--acento);
 }
 
 .nombreItem {
@@ -211,11 +282,17 @@
 }
 
 .cantidad {
-  color: var(--acento);
-  font-family: var(--fuente-display);
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--acento-suave);
+  color: var(--acento-texto);
   font-weight: 700;
-  margin-left: 6px;
+  font-size: 13px;
+  line-height: 1.6;
   white-space: nowrap;
+  vertical-align: 1px;
 }
 
 .porcion {
@@ -237,7 +314,7 @@
 
 .valores b {
   color: var(--tinta);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .edicion {
@@ -245,7 +322,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
-  padding: 0 0 12px;
+  padding: 0 0 14px;
 }
 
 .agregarElegido {
@@ -257,29 +334,26 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 8px;
   font-size: 14px;
   color: var(--tenue);
 }
 
 .agregar {
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   padding: 11px;
-  border-radius: var(--radio-chico);
-  border: 1.5px dashed var(--linea);
-  background: none;
-  color: var(--tinta);
-  font-family: var(--fuente-display);
+  border-radius: 14px;
+  border: 0;
+  background: var(--acento-suave);
+  color: var(--acento-texto);
   font-weight: 700;
-  font-size: 15px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 16px;
   cursor: pointer;
 }
 
 .agregar:hover {
-  border-color: var(--tenue);
+  background: color-mix(in srgb, var(--acento-suave) 80%, var(--acento));
 }
 
 /* ---------- Resto del día ---------- */
@@ -293,7 +367,7 @@
 }
 
 .agua b {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .agua .tenue {
@@ -313,29 +387,33 @@
 .segmentos {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 6px;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--tinte);
 }
 
 .segmentos button {
   min-height: 44px;
-  border-radius: var(--radio-chico);
-  border: 1px solid var(--linea);
-  background: var(--superficie);
-  font-family: var(--fuente-display);
-  font-weight: 700;
-  font-size: 18px;
+  border-radius: 10px;
+  border: 0;
+  background: none;
+  font-weight: 800;
+  font-stretch: var(--ancho-grabado);
+  font-size: 17px;
   cursor: pointer;
 }
 
 .segmentos button[aria-pressed='true'] {
-  background: var(--tinta);
-  color: var(--fondo);
-  border-color: var(--tinta);
+  background: var(--superficie);
+  color: var(--acento);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
 }
 
 .pie {
   font-size: 13px;
   color: var(--tenue);
+  padding-inline: 4px;
 }
 
 /* ---------- Panel para agregar ---------- */
@@ -344,8 +422,8 @@
   display: flex;
   gap: 4px;
   padding: 4px;
-  background: var(--superficie-2);
-  border-radius: 12px;
+  background: var(--tinte);
+  border-radius: 14px;
   position: sticky;
   top: -4px;
   z-index: 2;
@@ -355,22 +433,19 @@
   flex: 1;
   min-height: 40px;
   border: 0;
-  border-radius: 9px;
+  border-radius: 10px;
   background: none;
   color: var(--tenue);
   cursor: pointer;
-  font-family: var(--fuente-display);
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-weight: 650;
+  font-size: 15px;
   white-space: nowrap;
 }
 
 .pestanas button[aria-selected='true'] {
   background: var(--superficie);
   color: var(--tinta);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.14);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
 }
 
 .panelPestana {
@@ -396,9 +471,10 @@
   min-height: 36px;
   padding: 7px 12px;
   border-radius: 999px;
-  border: 1px solid var(--linea);
-  background: var(--superficie);
+  border: 0;
+  background: var(--tinte);
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -406,7 +482,6 @@
 .filtros button[aria-pressed='true'] {
   background: var(--tinta);
   color: var(--fondo);
-  border-color: var(--tinta);
 }
 
 .manual {
@@ -442,9 +517,10 @@
   align-items: center;
   gap: 4px;
   text-align: center;
-  padding: 18px 12px;
-  border: 1.5px dashed var(--linea);
-  border-radius: 12px;
+  padding: 22px 14px;
+  border: 1.5px dashed var(--tinte-fuerte);
+  border-radius: var(--radio);
+  background: var(--tinte);
   cursor: pointer;
 }
 
@@ -458,7 +534,7 @@
 }
 
 input:focus-visible + .zonaFoto {
-  outline: 2px solid var(--acento);
+  outline: 3px solid var(--acento);
   outline-offset: 2px;
 }
 
@@ -488,8 +564,7 @@ input:focus-visible + .zonaFoto {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px;
-  border: 1px solid var(--linea);
+  border-radius: 14px;
   display: block;
 }
 
@@ -539,17 +614,18 @@ input:focus-visible + .zonaFoto {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
+  padding: 14px;
   background: var(--superficie-2);
-  border-radius: 12px;
+  border-radius: var(--radio);
 }
 
 .barraProp {
   display: flex;
   height: 12px;
+  gap: 2px;
   border-radius: 999px;
   overflow: hidden;
-  background: var(--linea);
+  background: var(--tinte);
 }
 
 .barraProp span {
@@ -562,11 +638,11 @@ input:focus-visible + .zonaFoto {
 }
 
 [data-m='c'] {
-  --m: var(--hidratos);
+  --m: var(--hidratos-disco);
 }
 
 [data-m='g'] {
-  --m: var(--grasas);
+  --m: var(--grasas-disco);
 }
 
 .barraProp span {
@@ -585,7 +661,7 @@ input:focus-visible + .zonaFoto {
   display: inline-block;
   width: 10px;
   height: 10px;
-  border-radius: 3px;
+  border-radius: 50%;
   margin-right: 6px;
   background: var(--m);
   vertical-align: -1px;
@@ -597,11 +673,8 @@ input:focus-visible + .zonaFoto {
 }
 
 .tablaIA th {
-  font-family: var(--fuente-display);
   font-weight: 600;
   font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--tenue);
   text-align: left;
   padding: 0 4px 4px;
@@ -637,9 +710,9 @@ input:focus-visible + .zonaFoto {
 .quitarFila {
   width: 40px;
   height: 40px;
-  border: 1px solid var(--linea);
-  border-radius: var(--radio-chico);
-  background: var(--superficie);
+  border: 0;
+  border-radius: 50%;
+  background: var(--tinte);
   color: var(--tenue);
   display: grid;
   place-items: center;

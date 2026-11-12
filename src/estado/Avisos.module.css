@@ -2,7 +2,7 @@
   position: fixed;
   left: 0;
   right: 0;
-  bottom: calc(var(--alto-nav) + var(--alto-temporizador) + 12px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(max(10px, env(safe-area-inset-bottom, 0px)) + 64px + var(--alto-temporizador) + 12px);
   display: flex;
   justify-content: center;
   padding-inline: 16px;
@@ -25,11 +25,12 @@
   max-width: 520px;
   background: var(--tinta);
   color: var(--fondo);
-  padding: 10px 10px 10px 16px;
-  border-radius: 999px;
+  padding: 8px 8px 8px 18px;
+  min-height: 52px;
+  border-radius: 18px;
   font-weight: 600;
   font-size: 15px;
-  box-shadow: 0 6px 24px rgb(0 0 0 / 0.2);
+  box-shadow: var(--sombra-flotante);
   animation: entrar 0.18s ease-out;
 }
 
@@ -43,11 +44,10 @@
   background: color-mix(in srgb, var(--fondo) 18%, transparent);
   color: inherit;
   font: inherit;
-  font-family: var(--fuente-display);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 7px 12px;
-  border-radius: 999px;
+  font-weight: 700;
+  min-height: 38px;
+  padding: 7px 14px;
+  border-radius: 12px;
   cursor: pointer;
   white-space: nowrap;
 }

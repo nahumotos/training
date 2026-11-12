@@ -3,62 +3,85 @@
 }
 
 :global(:root):has(.contenedor[data-visible]) {
-  --alto-temporizador: 64px;
+  --alto-temporizador: 78px;
 }
 
+/* El descanso: una barra flotante, en negativo, con un disco que se vacía. */
 .barra {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(var(--alto-nav) + env(safe-area-inset-bottom, 0px));
+  left: max(12px, env(safe-area-inset-left, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: calc(max(10px, env(safe-area-inset-bottom, 0px)) + 64px + 8px);
   z-index: 50;
-  height: 64px;
+  max-width: 520px;
+  margin-inline: auto;
+  min-height: 68px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+  padding: 8px 8px 8px 10px;
+  border-radius: 22px;
   background: var(--tinta);
   color: var(--fondo);
-  overflow: hidden;
+  box-shadow: var(--sombra-flotante);
+  animation: aparecer 0.25s ease-out;
 }
 
 @media (min-width: 960px) {
   .barra {
-    left: var(--ancho-riel);
-    bottom: 0;
+    left: calc(var(--ancho-riel) + 24px);
+    right: 24px;
+    bottom: 24px;
   }
 }
 
 .barra[data-termino] {
   background: var(--bien);
   color: #fff;
+  justify-content: center;
+}
+
+.progreso {
+  --p: 1;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--tinta) 0 13px, transparent 13.5px),
+    conic-gradient(var(--acento) calc(var(--p) * 360deg), color-mix(in srgb, var(--fondo) 22%, transparent) 0);
+  transition: background 0.25s linear;
 }
 
 .info {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  flex: 1;
   min-width: 0;
 }
 
 .etiqueta {
-  font-family: var(--fuente-display);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  opacity: 0.8;
+  opacity: 0.75;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .tiempo {
-  font-family: var(--fuente-display);
-  font-weight: 700;
+  font-weight: 800;
+  font-stretch: var(--ancho-grabado);
   font-size: 28px;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+}
+
+.listo {
+  font-weight: 750;
+  font-stretch: var(--ancho-titulo);
+  font-size: 20px;
 }
 
 .acciones {
@@ -69,36 +92,42 @@
 
 .acciones button {
   min-width: 48px;
-  height: 40px;
+  height: 48px;
+  padding-inline: 10px;
   border: 0;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--fondo) 16%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--fondo) 14%, transparent);
   color: inherit;
-  font-family: var(--fuente-display);
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
 }
 
+.acciones button:hover {
+  background: color-mix(in srgb, var(--fondo) 24%, transparent);
+}
+
 .acciones .saltar {
-  padding-inline: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  background: var(--fondo);
+  color: var(--tinta);
+  padding-inline: 14px;
 }
 
-.progreso {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 3px;
-  width: 100%;
-  background: var(--acento);
-  transform-origin: left;
-  transition: transform 0.25s linear;
+.acciones .saltar:hover {
+  background: color-mix(in srgb, var(--fondo) 85%, var(--tinta));
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .progreso {
-    transition: none;
+@media (max-width: 360px) {
+  .acciones button {
+    min-width: 44px;
+    padding-inline: 6px;
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
   }
 }

@@ -47,7 +47,6 @@ export default function Progreso() {
   return (
     <div className="pila">
       <header className="cabecera">
-        <p className="ceja">Progreso</p>
         <h1>Cómo vas</h1>
       </header>
 

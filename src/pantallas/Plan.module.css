@@ -10,14 +10,14 @@
   min-height: 36px;
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid var(--linea);
   background: var(--superficie);
   font-size: 14px;
+  font-weight: 500;
   text-decoration: none;
 }
 
 .indice a:hover {
-  border-color: var(--tenue);
+  background: var(--tinte-fuerte);
 }
 
 .pasos {

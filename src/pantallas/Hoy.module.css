@@ -1,36 +1,57 @@
-.cifras {
+/* Comidas de hoy: el disco de proteína y, al lado, el resto de las cifras. */
+.resumen {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
 }
 
-.cifras > div {
+.cifraDisco {
+  font-size: 40px;
+}
+
+.deDisco {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.nombreDisco {
+  font-size: 13px;
+  color: var(--tenue);
+}
+
+.datos {
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 14px;
   min-width: 0;
 }
 
-.cifra {
+.datos dt {
+  font-size: 14px;
+  color: var(--tenue);
+}
+
+.datos dd {
+  margin: 2px 0 0;
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 2px 6px;
 }
 
-.cifra b {
-  font-family: var(--fuente-display);
-  font-weight: 700;
-  font-size: 34px;
-  line-height: 1;
+.datos b {
+  font-size: 26px;
 }
 
-.cifra b[data-ok] {
+.datos b[data-ok] {
   color: var(--bien);
 }
 
-.cifra span {
-  font-size: 13px;
+.datos span {
+  font-size: 14px;
   color: var(--tenue);
 }
 
@@ -50,38 +71,45 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .semana li {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
   min-width: 0;
+  padding: 12px;
+  border-radius: var(--radio);
+  background: var(--superficie-2);
 }
 
 .semana b {
-  font-family: var(--fuente-display);
-  font-weight: 700;
-  font-size: 28px;
-  line-height: 1;
+  font-size: 24px;
 }
 
 .semana span {
   font-size: 13px;
+  line-height: 1.3;
   color: var(--tenue);
 }
 
 .etapa {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  border-top: 1px solid var(--linea);
-  padding-top: 12px;
+  gap: 10px;
+  padding-top: 4px;
 }
 
-@media (max-width: 380px) {
-  .cifra b {
-    font-size: 28px;
+@media (max-width: 360px) {
+  .resumen {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .datos {
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
   }
 }

@@ -64,7 +64,7 @@ test('cargar desde la lista, cambiar la cantidad, quitar y deshacer', async ({ p
 
   // Hoy refleja lo cargado.
   await page.goto('/');
-  await expect(page.getByRole('region', { name: 'Comidas de hoy' })).toContainText('16 / 130 g');
+  await expect(page.getByRole('region', { name: 'Comidas de hoy' })).toContainText('16 de 130 g');
   await expect(page.getByRole('link', { name: 'Cargar almuerzo' })).toBeVisible();
 });
 

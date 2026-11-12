@@ -1,9 +1,10 @@
+import { Disco } from '../../componentes/Disco';
 import { estadoKcal, llegaProteina, type TotalesDia } from '../../dominio/comidas';
 import { gramos, litros, num } from '../../dominio/formato';
 import type { Objetivos } from '../../dominio/tipos';
 import estilos from './Comidas.module.css';
 
-function Medidor({ valor, escala, banda, ok, tipo }: { valor: number; escala: number; banda: { min: number; max: number }; ok: boolean; tipo: 'p' | 'k' }) {
+function Medidor({ valor, escala, banda, ok, tipo }: { valor: number; escala: number; banda: { min: number; max: number }; ok: boolean; tipo: 'k' | 'c' | 'g' }) {
   return (
     <div className={estilos.medidor} data-tipo={tipo} aria-hidden="true">
       <span className={estilos.banda} style={{ left: `${(banda.min / escala) * 100}%`, width: `${((banda.max - banda.min) / escala) * 100}%` }} />
@@ -15,43 +16,57 @@ function Medidor({ valor, escala, banda, ok, tipo }: { valor: number; escala: nu
 export function ResumenDia({ totales, agua, objetivos: o }: { totales: TotalesDia; agua: number; objetivos: Objetivos }) {
   const okP = llegaProteina(totales.p, o);
   const k = estadoKcal(totales.k, o);
-  const escalaP = Math.max(o.proteina.max * 1.15, totales.p);
   const escalaK = Math.max(o.kcal.max * 1.2, totales.k);
   const okAgua = agua >= o.agua;
 
   return (
     <section className="tarjeta" aria-label="Resumen del día">
       <div className={estilos.metricas}>
-        <div className={estilos.metrica}>
-          <span className="rotulo">Proteína</span>
-          <p className={estilos.cifra}>
-            <b className="num">{num(totales.p)}</b>{' '}
-            <span>de {o.proteina.obj} g</span>
-          </p>
-          <Medidor valor={totales.p} escala={escalaP} banda={o.proteina} ok={okP} tipo="p" />
+        <div className={estilos.proteina}>
+          <Disco valor={totales.p} objetivo={o.proteina.obj} banda={o.proteina} ok={okP} tam={132}>
+            <b className={`grabado ${estilos.cifraDisco}`}>{num(totales.p)}</b>{' '}
+            <span className={estilos.deDisco}>de {o.proteina.obj} g</span>
+            <span className="solo-lector"> de proteína.</span>
+          </Disco>
           <p className={okP ? `${estilos.estadoMetrica} ${estilos.ok}` : estilos.estadoMetrica}>
-            {okP ? 'Llegaste al objetivo de proteína' : `Te faltan ${num(o.proteina.obj - totales.p)} g`}
+            {okP ? 'Llegaste al objetivo de proteína' : `Te faltan ${num(o.proteina.obj - totales.p)} g de proteína`}
           </p>
         </div>
-        <div className={estilos.metrica}>
-          <span className="rotulo">Calorías</span>
-          <p className={estilos.cifra}>
-            <b className="num">{num(totales.k)}</b>{' '}
-            <span>
-              de {num(o.kcal.min)}–{num(o.kcal.max)} kcal
+        <div className={estilos.otras}>
+          <div className={estilos.metrica}>
+            <span className="rotulo">Calorías</span>
+            <p className={estilos.cifra}>
+              <b className="grabado">{num(totales.k)}</b>{' '}
+              <span>
+                de {num(o.kcal.min)}–{num(o.kcal.max)} kcal
+              </span>
+            </p>
+            <Medidor valor={totales.k} escala={escalaK} banda={o.kcal} ok={false} tipo="k" />
+            <p className={estilos.estadoMetrica}>
+              {k.tipo === 'faltan' ? `Te quedan unas ${num(k.cuanto)} kcal` : k.tipo === 'rango' ? 'En el rango' : `${num(k.cuanto)} kcal arriba del rango`}
+            </p>
+          </div>
+          <div className={estilos.macro}>
+            <span>Hidratos</span>
+            <b className="num">{gramos(totales.c)} g</b>
+            <Medidor valor={totales.c} escala={Math.max(o.hidratos.max * 1.2, totales.c)} banda={o.hidratos} ok={false} tipo="c" />
+            <span className="tenue num">
+              <span className="solo-lector">objetivo </span>
+              {o.hidratos.min}–{o.hidratos.max}
             </span>
-          </p>
-          <Medidor valor={totales.k} escala={escalaK} banda={o.kcal} ok={false} tipo="k" />
-          <p className={estilos.estadoMetrica}>
-            {k.tipo === 'faltan' ? `Te quedan unas ${num(k.cuanto)} kcal` : k.tipo === 'rango' ? 'En el rango' : `${num(k.cuanto)} kcal arriba del rango`}
-          </p>
+          </div>
+          <div className={estilos.macro}>
+            <span>Grasas</span>
+            <b className="num">{gramos(totales.g)} g</b>
+            <Medidor valor={totales.g} escala={Math.max(o.grasas.max * 1.2, totales.g)} banda={o.grasas} ok={false} tipo="g" />
+            <span className="tenue num">
+              <span className="solo-lector">objetivo </span>
+              {o.grasas.min}–{o.grasas.max}
+            </span>
+          </div>
+          {totales.parcial && <p className="ayuda">Hidratos y grasas parciales: algunos alimentos no los informan.</p>}
         </div>
       </div>
-      <p className={estilos.macros}>
-        Hidratos <b className="num">{gramos(totales.c)} g</b> <span className="tenue">({o.hidratos.min}–{o.hidratos.max})</span> · Grasas{' '}
-        <b className="num">{gramos(totales.g)} g</b> <span className="tenue">({o.grasas.min}–{o.grasas.max})</span>
-        {totales.parcial && <span className="tenue"> · parcial: algunos alimentos no los informan</span>}
-      </p>
       <div className="chips">
         <span className={totales.comidasConProteina >= 4 ? 'chip bien' : 'chip'}>
           Comidas con proteína <b>{totales.comidasConProteina} de 4</b>

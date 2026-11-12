@@ -13,9 +13,8 @@
   height: 120px;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 6px;
+  gap: 8px;
   align-items: end;
-  border-bottom: 1px solid var(--linea);
 }
 
 .columna {
@@ -27,8 +26,9 @@
 
 .barra {
   width: 100%;
-  max-width: 34px;
-  border-radius: 6px 6px 0 0;
+  max-width: 30px;
+  min-height: 4px;
+  border-radius: 999px;
 }
 
 .proteina {
@@ -47,7 +47,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  border-top: 1.5px dashed var(--tenue);
+  border-top: 1.5px dashed color-mix(in srgb, var(--tenue) 70%, transparent);
   pointer-events: none;
 }
 
@@ -80,8 +80,10 @@
 
 .etiquetas b {
   color: var(--tinta);
-  font-family: var(--fuente-display);
-  font-size: 15px;
+  font-weight: 800;
+  font-stretch: var(--ancho-grabado);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
 }
 
 .etiquetas [data-destacada] span:first-child {
@@ -108,8 +110,9 @@
 .linea {
   fill: none;
   stroke: var(--acento);
-  stroke-width: 2.5;
+  stroke-width: 3;
   stroke-linejoin: round;
+  stroke-linecap: round;
 }
 
 .relleno {
@@ -127,9 +130,9 @@
 }
 
 .valor {
-  font-family: var(--fuente-display);
-  font-weight: 700;
-  font-size: 15px;
+  font-weight: 800;
+  font-stretch: var(--ancho-grabado);
+  font-size: 14px;
   fill: var(--tinta);
 }
 
@@ -159,10 +162,7 @@
 }
 
 .datos th {
-  font-family: var(--fuente-display);
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--tenue);
   font-size: 13px;
 }

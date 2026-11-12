@@ -36,8 +36,8 @@
   aspect-ratio: 1;
   max-width: 100%;
   padding: 0;
-  border: 1px solid var(--linea);
-  border-radius: 12px;
+  border: 0;
+  border-radius: 16px;
   overflow: hidden;
   background: var(--superficie-2);
   cursor: pointer;
@@ -67,9 +67,8 @@
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 2;
-  border-radius: 12px;
+  border-radius: var(--radio);
   overflow: hidden;
-  border: 1px solid var(--linea);
   background: var(--superficie-2);
 }
 
@@ -85,7 +84,7 @@
 .vacio {
   width: 60px;
   aspect-ratio: 1;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--superficie-2);
   color: var(--tenue);
   display: grid;

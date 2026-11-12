@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode, type CSSProperties } from 'react';
 import { reloj } from '../dominio/formato';
 import estilos from './Temporizador.module.css';
 
@@ -98,8 +98,9 @@ export function ProveedorTemporizador({ children }: { children: ReactNode }) {
         <div className={estilos.barra} role="timer" aria-live="off" data-termino={termino || undefined}>
           {estado ? (
             <>
+              <span className={estilos.progreso} style={{ '--p': estado.total ? restante / estado.total : 0 } as CSSProperties} aria-hidden="true" />
               <div className={estilos.info}>
-                <span className={estilos.etiqueta}>Descanso · {estado.etiqueta}</span>
+                <span className={estilos.etiqueta}>Descanso de {estado.etiqueta}</span>
                 <span className={estilos.tiempo}>
                   <span aria-hidden="true">{reloj(Math.ceil(restante))}</span>
                   <span className="solo-lector">Quedan {Math.ceil(restante)} segundos</span>
@@ -116,11 +117,10 @@ export function ProveedorTemporizador({ children }: { children: ReactNode }) {
                   Saltar
                 </button>
               </div>
-              <span className={estilos.progreso} style={{ transform: `scaleX(${estado.total ? restante / estado.total : 0})` }} />
             </>
           ) : (
             <div className={estilos.info} role="alert">
-              <span className={estilos.tiempo}>¡A la próxima serie!</span>
+              <span className={estilos.listo}>¡A la próxima serie!</span>
             </div>
           )}
         </div>

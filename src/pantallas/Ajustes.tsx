@@ -49,7 +49,6 @@ export default function Ajustes() {
   return (
     <div className="pila">
       <header className="cabecera">
-        <p className="ceja">Ajustes</p>
         <h1>Tu cuenta y tus objetivos</h1>
       </header>
       {/* La clave remonta los formularios cuando llega el perfil guardado o cambia en otro dispositivo. */}
@@ -185,7 +184,7 @@ function ObjetivosForm({ perfil, alGuardar }: { perfil: Perfil; alGuardar: (p: P
         const errs = errores.filter((x) => g.error.includes(x.campo));
         return (
           <fieldset key={g.titulo} className={estilos.grupo}>
-            <legend className="rotulo">{g.titulo}</legend>
+            <legend className={estilos.leyenda}>{g.titulo}</legend>
             <div className="grilla-campos">
               {g.campos.map(([k, texto]) => (
                 <div className="campo" key={k}>

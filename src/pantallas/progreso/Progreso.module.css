@@ -8,8 +8,8 @@
 .flecha {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
-  border: 1px solid var(--linea);
+  border-radius: 50%;
+  border: 0;
   background: var(--superficie);
   display: grid;
   place-items: center;
@@ -23,9 +23,8 @@
 
 .semana {
   text-align: center;
-  font-size: 19px;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .kpis {
@@ -56,14 +55,17 @@
 
 .kpis dd {
   margin: 0;
-  font-family: var(--fuente-display);
-  font-weight: 700;
-  font-size: 28px;
-  line-height: 1.05;
+  font-weight: 800;
+  font-stretch: var(--ancho-grabado);
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .kpis dd span {
-  font-family: var(--fuente-texto);
+  font-stretch: 100%;
+  letter-spacing: 0;
   font-weight: 400;
   font-size: 14px;
   color: var(--tenue);
@@ -76,4 +78,5 @@
   white-space: pre-wrap;
   min-height: 220px;
   background: var(--superficie-2);
+  border-color: transparent;
 }

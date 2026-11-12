@@ -1,4 +1,4 @@
-/* Celular: barra superior y pestañas abajo. Desde 960 px: riel lateral a la izquierda. */
+/* Celular: barra superior liviana y pestañas flotantes abajo. Desde 960 px: riel lateral. */
 
 .marco {
   min-height: 100dvh;
@@ -27,37 +27,33 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 52px;
+  min-height: 56px;
   padding-top: env(safe-area-inset-top, 0px);
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(8px, env(safe-area-inset-right, 0px));
-  background: color-mix(in srgb, var(--fondo) 92%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--linea);
+  background: color-mix(in srgb, var(--fondo) 82%, transparent);
+  backdrop-filter: saturate(1.6) blur(16px);
+  -webkit-backdrop-filter: saturate(1.6) blur(16px);
 }
 
 .marca {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-family: var(--fuente-display);
-  font-weight: 700;
-  font-size: 22px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  gap: 9px;
+  font-weight: 800;
+  font-stretch: var(--ancho-grabado);
+  font-size: 19px;
+  letter-spacing: -0.01em;
   text-decoration: none;
   margin-right: auto;
 }
 
+/* El disco: aro de color con el agujero del centro. */
 .disco {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: var(--acento);
-  box-shadow:
-    inset 0 0 0 4px rgb(255 255 255 / 0.18),
-    inset 0 0 0 9px rgb(0 0 0 / 0.12);
+  background: radial-gradient(circle, var(--fondo) 0 3px, var(--acento) 3.5px 7px, color-mix(in srgb, var(--acento) 78%, black) 7.5px 8.5px, var(--acento) 9px);
 }
 
 .estado {
@@ -66,7 +62,7 @@
   gap: 6px;
   font-size: 13px;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 5px 11px;
   border-radius: 999px;
   background: var(--nota-fondo);
   color: var(--nota-tinta);
@@ -81,9 +77,13 @@
   height: 44px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
+  border-radius: 999px;
   color: var(--tenue);
   flex: none;
+}
+
+.ajustes:hover {
+  background: var(--tinte);
 }
 
 .ajustes:global(.active) {
@@ -94,20 +94,26 @@
   display: none;
 }
 
+/* Pestañas: una barra flotante y translúcida. */
 .nav {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: max(12px, env(safe-area-inset-left, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: max(10px, env(safe-area-inset-bottom, 0px));
   z-index: 45;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  height: calc(var(--alto-nav) + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
-  background: var(--superficie);
-  border-top: 1px solid var(--linea);
+  height: 64px;
+  padding: 6px;
+  margin-inline: auto;
+  max-width: 520px;
+  border-radius: 999px;
+  background: var(--vidrio);
+  box-shadow:
+    inset 0 0 0 1px var(--vidrio-borde),
+    var(--sombra-flotante);
+  backdrop-filter: saturate(1.8) blur(20px);
+  -webkit-backdrop-filter: saturate(1.8) blur(20px);
 }
 
 .enlace {
@@ -115,26 +121,33 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 1px;
+  border-radius: 999px;
   color: var(--tenue);
   text-decoration: none;
-  font-family: var(--fuente-display);
   font-weight: 600;
   font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   min-width: 0;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.enlace svg {
+  width: 22px;
+  height: 22px;
 }
 
 .enlace:global(.active) {
-  color: var(--acento);
+  color: var(--acento-texto);
+  background: var(--acento-suave);
 }
 
 .principal {
   width: 100%;
   max-width: var(--ancho-contenido);
   margin-inline: auto;
-  padding-top: 16px;
+  padding-top: 8px;
   padding-bottom: calc(var(--alto-nav) + var(--alto-temporizador) + 40px + env(safe-area-inset-bottom, 0px));
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
@@ -151,16 +164,16 @@
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
-    padding: 24px 16px 16px;
-    border-bottom: 0;
-    border-right: 1px solid var(--linea);
+    padding: 28px 16px 16px;
     background: var(--superficie);
     backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .marca {
     margin-right: 0;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    padding-inline: 12px;
   }
 
   .estado {
@@ -175,15 +188,18 @@
     right: 16px;
     bottom: 16px;
     width: auto;
-    height: 44px;
+    height: 46px;
     display: flex;
     justify-content: flex-start;
-    gap: 10px;
-    padding-inline: 12px;
-    font-family: var(--fuente-display);
+    gap: 12px;
+    padding-inline: 14px;
+    border-radius: 14px;
     font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+  }
+
+  .ajustes:global(.active) {
+    color: var(--acento-texto);
+    background: var(--acento-suave);
   }
 
   .textoAjustes {
@@ -192,34 +208,35 @@
 
   .nav {
     left: 0;
-    top: 84px;
+    right: auto;
+    top: 88px;
     bottom: auto;
     width: var(--ancho-riel);
+    max-width: none;
     height: auto;
     grid-template-columns: 1fr;
     gap: 4px;
     padding: 0 16px;
+    border-radius: 0;
     background: transparent;
-    border-top: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .enlace {
     flex-direction: row;
     justify-content: flex-start;
-    gap: 10px;
-    height: 44px;
-    padding-inline: 12px;
-    border-radius: 12px;
-    font-size: 15px;
-  }
-
-  .enlace:global(.active) {
-    background: var(--superficie-2);
+    gap: 12px;
+    height: 46px;
+    padding-inline: 14px;
+    border-radius: 14px;
+    font-size: 16px;
   }
 
   .principal {
     margin-left: calc(var(--ancho-riel) + max(24px, (100vw - var(--ancho-riel) - var(--ancho-contenido)) / 2));
     margin-right: auto;
-    padding-top: 32px;
+    padding-top: 36px;
   }
 }

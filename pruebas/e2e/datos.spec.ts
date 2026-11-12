@@ -30,7 +30,7 @@ test('cambiar los objetivos: validación, guardado y efecto en el diario', async
   await expect(proteina.getByLabel('Objetivo')).toHaveValue('130');
   await form.getByRole('button', { name: 'Guardar objetivos' }).click();
   await page.goto('/');
-  await expect(page.getByRole('region', { name: 'Comidas de hoy' })).toContainText('0 / 130 g');
+  await expect(page.getByRole('region', { name: 'Comidas de hoy' })).toContainText('0 de 130 g');
 });
 
 test('cambiar el inicio de la rutina mueve la semana del plan', async ({ page }) => {
