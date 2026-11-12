@@ -1,0 +1,34 @@
+.indice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.indice a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--linea);
+  background: var(--superficie);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.indice a:hover {
+  border-color: var(--tenue);
+}
+
+.pasos {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 15px;
+}
+
+section[id] {
+  scroll-margin-top: calc(72px + env(safe-area-inset-top, 0px));
+}

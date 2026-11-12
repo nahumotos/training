@@ -1,0 +1,104 @@
+.contenedor {
+  display: contents;
+}
+
+:global(:root):has(.contenedor[data-visible]) {
+  --alto-temporizador: 64px;
+}
+
+.barra {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--alto-nav) + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+  background: var(--tinta);
+  color: var(--fondo);
+  overflow: hidden;
+}
+
+@media (min-width: 960px) {
+  .barra {
+    left: var(--ancho-riel);
+    bottom: 0;
+  }
+}
+
+.barra[data-termino] {
+  background: var(--bien);
+  color: #fff;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.etiqueta {
+  font-family: var(--fuente-display);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tiempo {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.acciones {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+.acciones button {
+  min-width: 48px;
+  height: 40px;
+  border: 0;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fondo) 16%, transparent);
+  color: inherit;
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.acciones .saltar {
+  padding-inline: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.progreso {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--acento);
+  transform-origin: left;
+  transition: transform 0.25s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progreso {
+    transition: none;
+  }
+}

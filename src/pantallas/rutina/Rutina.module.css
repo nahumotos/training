@@ -1,0 +1,528 @@
+/* ---------- Lista de días ---------- */
+
+.avisoHoy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  font-size: 15px;
+}
+
+.avisoHoy > svg {
+  flex: none;
+  color: var(--acento);
+  align-self: flex-start;
+  margin-top: 1px;
+}
+
+.avisoHoy p {
+  flex: 1;
+  min-width: 0;
+}
+
+.avisoHoy b {
+  font-weight: 600;
+}
+
+.dias {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .dias {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.tarjetaDia {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.tarjetaDia:hover {
+  border-color: var(--tenue);
+}
+
+.arriba {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.disco {
+  --c: var(--torso);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--c);
+  display: grid;
+  place-items: center;
+  flex: none;
+  box-shadow:
+    inset 0 0 0 5px rgb(255 255 255 / 0.16),
+    inset 0 0 0 6px rgb(0 0 0 / 0.12);
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 19px;
+  color: #fff;
+}
+
+.disco[data-tipo='pierna'] {
+  --c: var(--pierna);
+}
+
+.pildora {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--tinta);
+  color: var(--fondo);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.cuando {
+  font-family: var(--fuente-display);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tenue);
+}
+
+.nombreDia {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.foco {
+  font-size: 14px;
+  color: var(--tenue);
+  line-height: 1.3;
+}
+
+.estadoDia {
+  font-size: 13px;
+  color: var(--tenue);
+  margin-top: auto;
+}
+
+.hecho {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--bien);
+  font-weight: 600;
+}
+
+/* ---------- Día de rutina ---------- */
+
+.volver {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  font-family: var(--fuente-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tenue);
+  text-decoration: none;
+}
+
+.volver:hover {
+  color: var(--tinta);
+}
+
+.avance {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--superficie-2);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.avance span {
+  display: block;
+  height: 100%;
+  background: var(--bien);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.calor {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.calor li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--linea);
+}
+
+.filaCalor {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.filaCalor > button,
+.filaCalor > span:first-child {
+  width: 60px;
+}
+
+.textoCalor {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 15px;
+}
+
+.textoCalor b {
+  font-weight: 600;
+}
+
+.textoCalor .tenue {
+  font-size: 14px;
+}
+
+.dosis {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.superserie {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background: var(--superserie);
+  border-radius: 18px;
+}
+
+.leyendaSuperserie {
+  font-size: 14px;
+  color: var(--tenue);
+  padding: 2px 4px 0;
+}
+
+.leyendaSuperserie b {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tinta);
+  margin-right: 6px;
+}
+
+.credito {
+  font-size: 13px;
+  color: var(--tenue);
+}
+
+/* ---------- Tarjeta de ejercicio ---------- */
+
+.ejercicio {
+  gap: 12px;
+}
+
+.cabEjercicio {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.cabEjercicio .tenue {
+  font-size: 14px;
+}
+
+.nombreEjercicio {
+  font-size: 20px;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.numero {
+  color: var(--acento);
+  margin-right: 6px;
+}
+
+.datos {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: var(--superficie-2);
+  border-radius: var(--radio-chico);
+  padding: 10px 4px;
+}
+
+.datos > div {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  min-width: 0;
+}
+
+.datos > div + div {
+  border-left: 1px solid var(--linea);
+}
+
+.datos dt {
+  font-family: var(--fuente-display);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tenue);
+}
+
+.datos dd {
+  margin: 0;
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.nota {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--nota-fondo);
+  color: var(--nota-tinta);
+  border-radius: var(--radio-chico);
+  padding: 9px 6px 9px 12px;
+}
+
+.nota > svg {
+  flex: none;
+}
+
+.textoNota {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.peso {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.total {
+  font-weight: 500;
+}
+
+.sugerido {
+  font-family: var(--fuente-display);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin-right: 6px;
+}
+
+.notaLibre {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.botonNota {
+  flex: none;
+  min-height: 40px;
+  padding: 6px 8px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.ultima {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 14px;
+  color: var(--tenue);
+}
+
+.valorUltima {
+  color: var(--tinta);
+  font-weight: 500;
+}
+
+.series {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 6px;
+  margin: -6px 0;
+}
+
+.series th {
+  font-family: var(--fuente-display);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tenue);
+  text-align: left;
+  padding: 0 4px;
+}
+
+.series thead th:first-child,
+.series tbody th {
+  width: 48px;
+}
+
+.series tbody th {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--tinta);
+  padding-left: 8px;
+}
+
+.series td {
+  padding: 0 4px;
+}
+
+.series td:last-child {
+  width: 52px;
+  padding-right: 0;
+}
+
+.celda {
+  text-align: center;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.marcar {
+  width: 48px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radio-chico);
+  border: 1px solid var(--linea);
+  background: var(--superficie);
+  color: var(--tenue);
+  cursor: pointer;
+}
+
+.series tr[data-hecha] .marcar {
+  background: var(--bien);
+  border-color: var(--bien);
+  color: #fff;
+}
+
+.series tr[data-hecha] .celda {
+  background: var(--bien-fondo);
+  border-color: transparent;
+}
+
+.pista {
+  font-size: 13px;
+  color: var(--tenue);
+}
+
+.tecnica {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 15px;
+  border-top: 1px solid var(--linea);
+  padding-top: 12px;
+}
+
+.aviso {
+  color: var(--acento);
+}
+
+.historial ul {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.historial li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--tenue);
+}
+
+.historial li .num {
+  color: var(--tinta);
+  text-align: right;
+}
+
+.formNota {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: var(--nota-fondo);
+  border-radius: var(--radio-chico);
+}
+
+.formNota label {
+  color: var(--nota-tinta);
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.acciones > * {
+  flex: 1;
+}

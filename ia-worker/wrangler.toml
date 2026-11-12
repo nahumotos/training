@@ -1,0 +1,25 @@
+# Worker que recibe las fotos o la descripción de una comida y le pide a Claude
+# la estimación. La clave de Anthropic NO va acá: se carga como secreto con
+#   npx wrangler secret put ANTHROPIC_API_KEY
+name = "libreta-ia"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[vars]
+# ID del proyecto de Firebase (el mismo de VITE_FIREBASE_PROJECT_ID).
+FIREBASE_PROYECTO = "ID-DE-TU-PROYECTO"
+# Direcciones desde las que se puede usar, separadas por coma.
+ORIGENES = "https://ID-DE-TU-PROYECTO.web.app,https://ID-DE-TU-PROYECTO.firebaseapp.com"
+# Cálculos por persona y por día (solo se aplica si configurás el KV de abajo).
+LIMITE_DIARIO = "40"
+
+# Opcional: límite diario por persona. Creá el espacio con
+#   npx wrangler kv namespace create LIMITES
+# y pegá acá el id que te devuelve.
+# [[kv_namespaces]]
+# binding = "LIMITES"
+# id = "PEGAR-ID"
+
+[observability]
+enabled = true

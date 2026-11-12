@@ -1,0 +1,32 @@
+.paso {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-chico);
+  overflow: hidden;
+  background: var(--superficie);
+}
+
+.paso button {
+  width: 46px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background: var(--superficie);
+  border: 0;
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.paso button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.paso output {
+  min-width: 72px;
+  text-align: center;
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 18px;
+}

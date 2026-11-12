@@ -1,0 +1,168 @@
+.figura {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* ---------- Barras ---------- */
+
+.area {
+  position: relative;
+  height: 120px;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  align-items: end;
+  border-bottom: 1px solid var(--linea);
+}
+
+.columna {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.barra {
+  width: 100%;
+  max-width: 34px;
+  border-radius: 6px 6px 0 0;
+}
+
+.proteina {
+  background: var(--acento);
+}
+
+.kcal {
+  background: var(--kcal);
+}
+
+.barra[data-ok] {
+  background: var(--bien);
+}
+
+.objetivo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1.5px dashed var(--tenue);
+  pointer-events: none;
+}
+
+.objetivo span {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  font-size: 12px;
+  color: var(--tenue);
+  background: var(--superficie);
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.etiquetas {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  text-align: center;
+}
+
+.etiquetas div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 12px;
+  color: var(--tenue);
+  min-width: 0;
+}
+
+.etiquetas b {
+  color: var(--tinta);
+  font-family: var(--fuente-display);
+  font-size: 15px;
+}
+
+.etiquetas [data-destacada] span:first-child {
+  color: var(--tinta);
+  font-weight: 600;
+}
+
+/* ---------- Línea ---------- */
+
+.lienzo {
+  width: 100%;
+  min-width: 0;
+}
+
+.lienzo svg {
+  display: block;
+  overflow: visible;
+}
+
+.eje {
+  stroke: var(--linea);
+}
+
+.linea {
+  fill: none;
+  stroke: var(--acento);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.relleno {
+  fill: color-mix(in srgb, var(--acento) 10%, transparent);
+}
+
+.punto {
+  fill: var(--superficie);
+  stroke: var(--acento);
+  stroke-width: 2;
+}
+
+.puntoFinal {
+  fill: var(--acento);
+}
+
+.valor {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 15px;
+  fill: var(--tinta);
+}
+
+.ejeTexto {
+  font-size: 12px;
+  fill: var(--tenue);
+}
+
+.datos summary {
+  font-size: 14px;
+  color: var(--tenue);
+  cursor: pointer;
+}
+
+.datos table {
+  margin-top: 8px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.datos th,
+.datos td {
+  text-align: left;
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.datos th {
+  font-family: var(--fuente-display);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tenue);
+  font-size: 13px;
+}

@@ -1,0 +1,3 @@
+# Sitio personal con datos privados.
+User-agent: *
+Disallow: /

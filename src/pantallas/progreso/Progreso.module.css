@@ -1,0 +1,79 @@
+.navSemana {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 8px;
+  align-items: center;
+}
+
+.flecha {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--linea);
+  background: var(--superficie);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.flecha:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.semana {
+  text-align: center;
+  font-size: 19px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.kpis {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 12px;
+}
+
+@media (min-width: 640px) {
+  .kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.kpis > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 2px;
+  min-width: 0;
+}
+
+.kpis dt {
+  font-size: 13px;
+  color: var(--tenue);
+}
+
+.kpis dd {
+  margin: 0;
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.05;
+}
+
+.kpis dd span {
+  font-family: var(--fuente-texto);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--tenue);
+}
+
+.vistaPrevia {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  min-height: 220px;
+  background: var(--superficie-2);
+}

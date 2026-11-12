@@ -1,0 +1,71 @@
+/* Identidad tomada de los prototipos: libreta de gimnasio, discos rojo (torso) y azul (pierna),
+   nota amarilla para el peso. Neutros con un leve tinte frío. */
+:root {
+  --fondo: #edf0f2;
+  --superficie: #ffffff;
+  --superficie-2: #f3f5f7;
+  --superserie: #e1e6ea;
+  --tinta: #14181c;
+  --tenue: #59646e;
+  --linea: #d4dae0;
+  --acento: #c41f29;
+  --acento-tinta: #ffffff;
+  --torso: #c41f29;
+  --pierna: #1e58b4;
+  --kcal: #1e58b4;
+  --banda-p: #f6dadc;
+  --banda-k: #d9e4f5;
+  --hidratos: #a46a12;
+  --grasas: #5e6b76;
+  --nota-fondo: #fff2cc;
+  --nota-tinta: #4f3b00;
+  --bien: #136f44;
+  --bien-fondo: #ddf2e6;
+  --velo: rgb(20 24 28 / 0.45);
+
+  --fuente-display: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  --fuente-texto: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --radio: 14px;
+  --radio-chico: 10px;
+  --alto-nav: 64px;
+  --ancho-riel: 0px;
+  --alto-temporizador: 0px;
+  --ancho-contenido: 760px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #0e1113;
+    --superficie: #171b1f;
+    --superficie-2: #1e2328;
+    --superserie: #121619;
+    --tinta: #e7ebee;
+    --tenue: #97a2ab;
+    --linea: #2a3137;
+    --acento: #ee4a53;
+    --acento-tinta: #160406;
+    --torso: #e0434c;
+    --pierna: #4a84e0;
+    --kcal: #4a84e0;
+    --banda-p: #3a1c1f;
+    --banda-k: #1c2b44;
+    --hidratos: #e0a23c;
+    --grasas: #8c99a4;
+    --nota-fondo: #2c2510;
+    --nota-tinta: #f1d27c;
+    --bien: #4cc48a;
+    --bien-fondo: #12301f;
+    --velo: rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --alto-nav: 0px;
+    --ancho-riel: 220px;
+  }
+}

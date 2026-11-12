@@ -1,0 +1,87 @@
+.cifras {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.cifras > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cifra {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.cifra b {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.cifra b[data-ok] {
+  color: var(--bien);
+}
+
+.cifra span {
+  font-size: 13px;
+  color: var(--tenue);
+}
+
+.accionesComida {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.accionesComida > * {
+  flex: 1 1 180px;
+}
+
+.semana {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.semana li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.semana b {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.semana span {
+  font-size: 13px;
+  color: var(--tenue);
+}
+
+.etapa {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--linea);
+  padding-top: 12px;
+}
+
+@media (max-width: 380px) {
+  .cifra b {
+    font-size: 28px;
+  }
+}

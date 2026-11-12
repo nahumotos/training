@@ -1,0 +1,17 @@
+node_modules/
+dist/
+dist-demo/
+dist-prueba/
+dev-dist/
+*.tsbuildinfo
+.env.local
+.env.*.local
+.firebase/
+.firebaserc
+firebase-debug.log
+firestore-debug.log
+pruebas/e2e/resultados/
+ia-worker/.wrangler/
+ia-worker/.dev.vars
+# Datos personales exportados: no se suben al repositorio
+*.libreta.json

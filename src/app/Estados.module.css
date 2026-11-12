@@ -1,0 +1,62 @@
+.cargando,
+.cargandoEnLinea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--tenue);
+  font-family: var(--fuente-display);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cargando {
+  min-height: 100dvh;
+}
+
+.cargandoEnLinea {
+  min-height: 40vh;
+}
+
+.disco {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 4px solid var(--acento);
+  border-right-color: transparent;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pantalla {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding-block: 32px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.caja {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.caja h1 {
+  font-size: 32px;
+  text-transform: uppercase;
+}
+
+.caja ul {
+  margin: 0;
+  padding-left: 20px;
+}

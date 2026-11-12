@@ -1,0 +1,42 @@
+.grupo {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.acciones > * {
+  flex: 1 1 160px;
+}
+
+.archivo {
+  font-size: 15px;
+  max-width: 100%;
+}
+
+.confirmar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radio-chico);
+  background: var(--nota-fondo);
+  color: var(--nota-tinta);
+}
+
+.pasos {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
