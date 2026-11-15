@@ -59,6 +59,10 @@ export async function sinDesborde(page: Page) {
 
 /** Revisión automática de accesibilidad (axe-core): sin problemas graves ni críticos. */
 export async function accesible(page: Page) {
+  // Se revisa el estado final: se espera a que terminen las transiciones de entrada.
+  await page.waitForFunction(() =>
+    document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Number.POSITIVE_INFINITY),
+  );
   const r = await new AxeBuilder(page).analizar();
   const graves = r.filter((v) => v.impact === 'serious' || v.impact === 'critical');
   expect(graves.map((v) => `${v.id}: ${v.help} → ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([]);

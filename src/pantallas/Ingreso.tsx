@@ -49,6 +49,10 @@ export function Ingreso() {
 
   return (
     <main className={estilos.pantalla}>
+      {/* Decoración: un disco grande, el sello de la app. */}
+      <div className={estilos.escena} aria-hidden="true">
+        <span className={estilos.discoGrande} />
+      </div>
       <div className={estilos.caja}>
         <div className={estilos.marca}>
           <span className={estilos.disco} aria-hidden="true" />

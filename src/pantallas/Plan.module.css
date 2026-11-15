@@ -1,16 +1,42 @@
+/* Índice: fila de accesos que queda a la vista al bajar. */
 .indice {
+  position: sticky;
+  top: calc(56px + env(safe-area-inset-top, 0px));
+  z-index: 20;
   display: flex;
-  flex-wrap: wrap;
   gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-inline: -16px;
+  padding: 8px 16px;
+  background: color-mix(in srgb, var(--fondo) 86%, transparent);
+  backdrop-filter: saturate(1.6) blur(16px);
+  -webkit-backdrop-filter: saturate(1.6) blur(16px);
+}
+
+.indice::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 960px) {
+  .indice {
+    top: 0;
+    flex-wrap: wrap;
+    margin-inline: 0;
+    padding: 8px 0;
+  }
 }
 
 .indice a {
+  flex: none;
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
-  padding: 6px 12px;
+  min-height: 38px;
+  padding: 6px 14px;
   border-radius: 999px;
   background: var(--superficie);
+  box-shadow: var(--filete);
+  white-space: nowrap;
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -30,5 +56,5 @@
 }
 
 section[id] {
-  scroll-margin-top: calc(72px + env(safe-area-inset-top, 0px));
+  scroll-margin-top: calc(120px + env(safe-area-inset-top, 0px));
 }

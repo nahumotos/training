@@ -110,7 +110,7 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
   };
 
   return (
-    <div className="pila">
+    <div className="pila pantalla">
       <Link to="/rutina" className={estilos.volver}>
         <Icono nombre="izquierda" tam={16} />
         Mi rutina
@@ -118,18 +118,32 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
       <header className="cabecera">
         <p className="ceja">{dia.dia}</p>
         <h1>
-          Día {dia.num}: <span className="acento">{dia.nombre}</span>
+          Día {dia.num}: {dia.nombre}
         </h1>
-        <p className="sub">
-          {dia.foco} · {dia.ex.length} ejercicios · {total} series · {dia.duracion}
-        </p>
+        <p className="sub">{dia.foco}</p>
+        <ul className={estilos.metaDia}>
+          <li>
+            <Icono nombre="rutina" tam={18} />
+            {dia.ex.length} ejercicios
+          </li>
+          <li>
+            <Icono nombre="series" tam={18} />
+            {total} series
+          </li>
+          <li>
+            <Icono nombre="reloj" tam={18} />
+            {dia.duracion}
+          </li>
+        </ul>
+      </header>
+      <div className={estilos.progresoFijo} data-tipo={dia.tipo}>
         <div className={estilos.avance} role="progressbar" aria-label="Series hechas hoy" aria-valuemin={0} aria-valuemax={total} aria-valuenow={hechas} aria-valuetext={`${hechas} de ${total}`}>
           <span style={{ transform: `scaleX(${total ? hechas / total : 0})` }} />
         </div>
-        <p className="tenue num">
+        <p className="num">
           {hechas ? `${hechas} de ${total} series hechas hoy` : 'Marcá cada serie al terminarla: arranca el descanso y queda guardada.'}
         </p>
-      </header>
+      </div>
 
       <details className="tarjeta desplegable" open={calorAbierto} onToggle={(e) => setCalorAbierto(e.currentTarget.open)}>
         <summary>

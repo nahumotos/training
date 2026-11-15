@@ -87,7 +87,7 @@ function DiarioDia({ fecha, hoy }: { fecha: string; hoy: string }) {
   const etiquetaRelativa = esHoy ? 'Hoy' : fecha === sumarDias(hoy, -1) ? 'Ayer' : '';
 
   return (
-    <div className="pila">
+    <div className="pila pantalla amplia">
       <header className={estilos.navFecha}>
         <Link to={`/comidas/${sumarDias(fecha, -1)}`} className={estilos.flecha} aria-label="Día anterior">
           <Icono nombre="izquierda" />
@@ -111,31 +111,38 @@ function DiarioDia({ fecha, hoy }: { fecha: string; hoy: string }) {
       )}
 
       {cargado ? (
-        <>
-          <ResumenDia totales={totales} agua={dia.agua} objetivos={o} />
-
-          <div className={estilos.comidas}>
-            {IDS_COMIDA.map((c) => (
-              <TarjetaComida
-                key={c}
-                comida={c}
-                items={dia.comidas[c]}
-                macros={totales.porComida[c]}
-                ayer={ayer?.comidas[c] ?? []}
-                alAgregar={() => abrir(c)}
-                alCopiarAyer={() => copiarDeAyer(c)}
-                alCambiarCantidad={(id, q) => cambiarCantidad(c, id, q)}
-                alQuitar={(id) => quitar(c, id)}
-              />
-            ))}
+        <div className={estilos.cuerpo}>
+          <div className={estilos.colPrincipal}>
+            <div className={estilos.comidas}>
+              {IDS_COMIDA.map((c) => (
+                <TarjetaComida
+                  key={c}
+                  comida={c}
+                  items={dia.comidas[c]}
+                  macros={totales.porComida[c]}
+                  ayer={ayer?.comidas[c] ?? []}
+                  alAgregar={() => abrir(c)}
+                  alCopiarAyer={() => copiarDeAyer(c)}
+                  alCambiarCantidad={(id, q) => cambiarCantidad(c, id, q)}
+                  alQuitar={(id) => quitar(c, id)}
+                />
+              ))}
+            </div>
+            <div className={estilos.ordResto}>
+              <RestoDelDia dia={dia} objetivoAgua={o.agua} cambiar={cambiar} />
+            </div>
           </div>
 
-          <RestoDelDia dia={dia} objetivoAgua={o.agua} cambiar={cambiar} />
-
-          <SemanaProteina fecha={fecha} dias={[...anteriores, dia]} objetivos={o} />
-
-          <p className={estilos.pie}>Los valores son aproximados. Si un envase dice otra cosa, cargalo en Manual con los datos de la etiqueta.</p>
-        </>
+          <div className={estilos.colLateral}>
+            <div className={estilos.ordResumen}>
+              <ResumenDia totales={totales} agua={dia.agua} objetivos={o} />
+            </div>
+            <div className={estilos.ordSemana}>
+              <SemanaProteina fecha={fecha} dias={[...anteriores, dia]} objetivos={o} />
+            </div>
+            <p className={`${estilos.pie} ${estilos.ordPie}`}>Los valores son aproximados. Si un envase dice otra cosa, cargalo en Manual con los datos de la etiqueta.</p>
+          </div>
+        </div>
       ) : (
         <Cargando enLinea />
       )}

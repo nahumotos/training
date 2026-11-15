@@ -57,8 +57,16 @@ export function AvisoHoy({ toca, conBoton = false }: { toca: QueToca; conBoton?:
       break;
   }
   return (
-    <div className={estilos.avisoHoy}>
-      <Icono nombre="hoy" />
+    <div className={estilos.avisoHoy} data-tipo={toca.tipo}>
+      {toca.tipo === 'entreno' ? (
+        <span className={estilos.disco} data-tipo={toca.dia.tipo} aria-hidden="true">
+          {toca.dia.letra}
+        </span>
+      ) : (
+        <span className={estilos.iconoAviso} aria-hidden="true">
+          <Icono nombre={toca.tipo === 'descanso' ? 'luna' : 'hoy'} />
+        </span>
+      )}
       <p>{texto}</p>
       {conBoton && enlace && (
         <Link to={enlace.a} className="boton primario chico">

@@ -1,25 +1,18 @@
 /* ---------- Lista de días ---------- */
 
 .avisoHoy {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 12px 14px;
-  padding: 14px 16px;
+  gap: var(--e-3) var(--e-4);
+  padding: var(--e-4);
   background: var(--superficie-2);
   border-radius: var(--radio);
   font-size: 16px;
-}
-
-.avisoHoy > svg {
-  flex: none;
-  color: var(--acento);
-  align-self: flex-start;
-  margin-top: 2px;
+  line-height: 1.45;
 }
 
 .avisoHoy p {
-  flex: 1 1 200px;
   min-width: 0;
 }
 
@@ -28,7 +21,21 @@
 }
 
 .avisoHoy > a {
-  flex: 1 1 100%;
+  grid-column: 1 / -1;
+}
+
+.iconoAviso {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--acento);
+}
+
+.avisoHoy[data-tipo='descanso'] .iconoAviso {
+  color: var(--azul);
 }
 
 .dias {
@@ -56,8 +63,17 @@
   transition: transform 0.15s ease;
 }
 
+.tarjetaDia {
+  box-shadow: var(--filete);
+}
+
 .tarjetaDia:hover {
-  box-shadow: inset 0 0 0 1.5px var(--linea);
+  box-shadow: var(--filete), 0 6px 18px rgb(23 26 31 / 0.07);
+}
+
+/* El día que toca hoy lleva el aro del color de su disco. */
+.tarjetaDia[data-hoy] {
+  box-shadow: inset 0 0 0 2px var(--acento);
 }
 
 .tarjetaDia:active {
@@ -154,12 +170,61 @@
   text-underline-offset: 3px;
 }
 
+/* Datos del día: ejercicios, series y duración. */
+.metaDia {
+  list-style: none;
+  margin: var(--e-1) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+
+.metaDia li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 10px;
+  border-radius: 999px;
+  background: var(--superficie);
+  box-shadow: var(--filete);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.metaDia svg {
+  color: var(--tenue);
+}
+
+/* El avance del día queda a la vista mientras bajás por los ejercicios. */
+.progresoFijo {
+  position: sticky;
+  top: calc(56px + env(safe-area-inset-top, 0px));
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-inline: -4px;
+  padding: 10px 14px 12px;
+  border-radius: var(--radio);
+  background: var(--superficie);
+  box-shadow: var(--filete), 0 6px 16px rgb(23 26 31 / 0.06);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--tenue);
+}
+
+@media (min-width: 960px) {
+  .progresoFijo {
+    top: var(--e-4);
+  }
+}
+
 .avance {
   height: 8px;
   border-radius: 999px;
   background: var(--tinte);
   overflow: hidden;
-  margin-top: 6px;
 }
 
 .avance span {
@@ -222,22 +287,22 @@
 .lista {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--e-4);
 }
 
 .superserie {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 10px;
+  gap: var(--e-2);
+  padding: var(--e-2);
   background: var(--superserie);
-  border-radius: calc(var(--radio-panel) + 6px);
+  border-radius: calc(var(--radio-panel) + 8px);
 }
 
 .leyendaSuperserie {
   font-size: 14px;
   color: var(--tenue);
-  padding: 4px 8px 0;
+  padding: var(--e-2) var(--e-3) var(--e-1);
 }
 
 .leyendaSuperserie b {

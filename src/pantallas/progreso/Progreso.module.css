@@ -1,8 +1,12 @@
 .navSemana {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) 44px;
-  gap: 8px;
+  gap: var(--e-2);
   align-items: center;
+  padding: 6px;
+  border-radius: 999px;
+  background: var(--superficie);
+  box-shadow: var(--filete);
 }
 
 .flecha {
@@ -10,7 +14,8 @@
   height: 44px;
   border-radius: 50%;
   border: 0;
-  background: var(--superficie);
+  background: var(--superficie-2);
+  color: var(--tinta);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -23,15 +28,16 @@
 
 .semana {
   text-align: center;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
+  line-height: 1.25;
 }
 
 .kpis {
   margin: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 12px;
+  gap: var(--e-2);
 }
 
 @media (min-width: 640px) {
@@ -40,34 +46,59 @@
   }
 }
 
+/* Cada indicador: ícono, cifra «grabada» y qué mide. */
 .kpis > div {
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-end;
-  gap: 2px;
+  display: grid;
+  grid-template-areas:
+    'icono'
+    'valor'
+    'nombre';
+  align-content: start;
+  gap: 4px;
   min-width: 0;
+  padding: var(--e-3);
+  border-radius: var(--radio);
+  background: var(--superficie-2);
+}
+
+.kpis > div > svg {
+  grid-area: icono;
+  color: var(--tenue);
+  margin-bottom: 2px;
+}
+
+.kpis > div[data-tono='rojo'] > svg {
+  color: var(--acento);
+}
+
+.kpis > div[data-tono='azul'] > svg {
+  color: var(--azul);
 }
 
 .kpis dt {
+  grid-area: nombre;
   font-size: 13px;
+  line-height: 1.3;
   color: var(--tenue);
 }
 
 .kpis dd {
+  grid-area: valor;
   margin: 0;
   font-weight: 800;
   font-stretch: var(--ancho-grabado);
   font-variant-numeric: tabular-nums;
-  font-size: 24px;
+  font-size: 22px;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
 .kpis dd span {
   font-stretch: 100%;
   letter-spacing: 0;
-  font-weight: 400;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 13px;
   color: var(--tenue);
 }
 

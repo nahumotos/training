@@ -17,7 +17,7 @@ export function Rutina() {
   const hechosSemana = diasHechosEnSemana(sesiones, lunesDe(hoy));
 
   return (
-    <div className="pila">
+    <div className="pila pantalla amplia">
       <header className="cabecera">
         <p className="ceja">Rutina actual</p>
         <h1>Torso / Pierna · 4 días</h1>
@@ -33,7 +33,7 @@ export function Rutina() {
           const ultima = [...sesiones].reverse().find((s) => s.dia === d.id && seriesHechas(s) > 0);
           const esHoy = toca.tipo === 'entreno' && toca.dia.id === d.id;
           return (
-            <Link key={d.id} to={`/rutina/${d.id}`} className={estilos.tarjetaDia}>
+            <Link key={d.id} to={`/rutina/${d.id}`} className={estilos.tarjetaDia} data-hoy={esHoy || undefined}>
               <span className={estilos.arriba}>
                 <span className={estilos.disco} data-tipo={d.tipo} aria-hidden="true">
                   {d.letra}

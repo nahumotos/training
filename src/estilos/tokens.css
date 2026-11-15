@@ -34,9 +34,15 @@
   --tinta: #17191d;
   --tenue: #5f6771;
   --linea: #e2e5e9;
-  --vidrio: rgb(255 255 255 / 0.86);
+  --vidrio: rgb(255 255 255 / 0.92);
   --vidrio-borde: rgb(23 26 31 / 0.08);
   --sombra-flotante: 0 10px 30px rgb(23 26 31 / 0.12), 0 2px 6px rgb(23 26 31 / 0.06);
+
+  /* Bloque destacado (el entrenamiento del día), en negativo */
+  --heroe-fondo: #17191d;
+  --heroe-tinta: #f3f4f6;
+  --heroe-tenue: #aab1ba;
+  --heroe-tinte: rgb(255 255 255 / 0.07);
 
   /* Discos */
   --rojo: #d2202f;
@@ -83,11 +89,30 @@
   --radio: 16px;
   --radio-chico: 12px;
 
+  /* Espacio: escala de 4 px */
+  --e-1: 4px;
+  --e-2: 8px;
+  --e-3: 12px;
+  --e-4: 16px;
+  --e-5: 20px;
+  --e-6: 24px;
+  --e-7: 32px;
+  --e-8: 40px;
+
+  /* Paneles: un filete apenas visible define el borde sin recargar */
+  --filete: 0 0 0 1px rgb(23 26 31 / 0.04), 0 1px 2px rgb(23 26 31 / 0.04);
+
+  /* Movimiento */
+  --rapido: 120ms;
+  --normal: 200ms;
+  --curva: cubic-bezier(0.2, 0.8, 0.2, 1);
+
   /* Medidas de la estructura */
   --alto-nav: 76px;
   --ancho-riel: 0px;
   --alto-temporizador: 0px;
   --ancho-contenido: 720px;
+  --ancho-amplio: 720px;
 
   color-scheme: light;
 }
@@ -103,9 +128,13 @@
     --tinta: #eef0f3;
     --tenue: #9aa3ad;
     --linea: #2b3036;
-    --vidrio: rgb(30 33 38 / 0.86);
+    --vidrio: rgb(30 33 38 / 0.94);
     --vidrio-borde: rgb(255 255 255 / 0.08);
     --sombra-flotante: 0 10px 30px rgb(0 0 0 / 0.45);
+    --filete: 0 0 0 1px rgb(255 255 255 / 0.05);
+
+    --heroe-fondo: #262a30;
+    --heroe-tinte: rgb(255 255 255 / 0.06);
 
     --rojo: #ff4d5a;
     --rojo-suave: #3a1b1f;
@@ -131,5 +160,11 @@
   :root {
     --alto-nav: 0px;
     --ancho-riel: 232px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --ancho-amplio: 1040px;
   }
 }

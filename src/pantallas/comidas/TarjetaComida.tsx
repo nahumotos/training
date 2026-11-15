@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Icono } from '../../componentes/Icono';
 import { Paso } from '../../componentes/Paso';
 import { COMIDAS, type Macros } from '../../dominio/comidas';
 import { cantidad, gramos, num } from '../../dominio/formato';
@@ -88,16 +89,20 @@ export function TarjetaComida({
         <div className={estilos.vacia}>
           <span>Sin cargar.</span>
           {ayer.length > 0 && (
-            <button type="button" className="enlace" onClick={alCopiarAyer}>
-              Copiar lo de ayer: {ayer.slice(0, 3).map((i) => `${i.n}${i.q !== 1 ? ` ${cantidad(i.q)}` : ''}`).join(', ')}
-              {ayer.length > 3 ? '…' : ''}
+            <button type="button" className={estilos.copiarAyer} onClick={alCopiarAyer}>
+              <Icono nombre="copiar" tam={18} />
+              <span>
+                Copiar lo de ayer: {ayer.slice(0, 3).map((i) => `${i.n}${i.q !== 1 ? ` ${cantidad(i.q)}` : ''}`).join(', ')}
+                {ayer.length > 3 ? '…' : ''}
+              </span>
             </button>
           )}
         </div>
       )}
 
       <button type="button" className={estilos.agregar} onClick={alAgregar}>
-        + Agregar {def.a}
+        <Icono nombre="mas" tam={20} />
+        Agregar {def.a}
       </button>
     </section>
   );

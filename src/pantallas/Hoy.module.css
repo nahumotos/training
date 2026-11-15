@@ -1,9 +1,68 @@
-/* Comidas de hoy: el disco de proteína y, al lado, el resto de las cifras. */
+/* ---------- Entrenamiento: el bloque destacado del día, en negativo ---------- */
+
+.heroe {
+  background: var(--heroe-fondo);
+  color: var(--heroe-tinta);
+  box-shadow: none;
+}
+
+.heroe :global(.tenue) {
+  color: var(--heroe-tenue);
+}
+
+/* El aviso de qué toca hoy (componente compartido con Rutina), adaptado al fondo oscuro. */
+.heroe > [data-tipo] {
+  background: var(--heroe-tinte);
+  font-size: 17px;
+}
+
+/* El disco del día, más grande. */
+.heroe > [data-tipo] > span[data-tipo] {
+  width: 56px;
+  height: 56px;
+  font-size: 22px;
+}
+
+/* El ícono de los días sin entrenamiento. */
+.heroe > [data-tipo] > span:not([data-tipo]) {
+  background: var(--heroe-tinte);
+}
+
+.heroe .barra {
+  background: var(--heroe-tinte);
+}
+
+
+.enCurso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-2);
+}
+
+.barra {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--tinte);
+  overflow: hidden;
+}
+
+.barra > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--acento);
+  transform-origin: left;
+  transition: transform 0.35s var(--curva);
+}
+
+/* ---------- Comidas de hoy: el disco y, al lado, el resto de las cifras ---------- */
+
 .resumen {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 18px;
+  gap: var(--e-5);
 }
 
 .cifraDisco {
@@ -25,17 +84,32 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--e-4);
   min-width: 0;
 }
 
 .datos dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   color: var(--tenue);
 }
 
+.datos dt svg {
+  flex: none;
+}
+
+.datos > div:first-child dt svg {
+  color: var(--azul);
+}
+
+.datos > div:last-child dt svg {
+  color: var(--acento);
+}
+
 .datos dd {
-  margin: 2px 0 0;
+  margin: 4px 0 0;
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -58,12 +132,19 @@
 .accionesComida {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--e-2);
 }
 
 .accionesComida > * {
   flex: 1 1 180px;
 }
+
+.accionesComida svg {
+  color: var(--azul);
+  flex: none;
+}
+
+/* ---------- Esta semana ---------- */
 
 .semana {
   list-style: none;
@@ -71,17 +152,7 @@
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.semana li {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-  padding: 12px;
-  border-radius: var(--radio);
-  background: var(--superficie-2);
+  gap: var(--e-2);
 }
 
 .semana b {
@@ -97,8 +168,16 @@
 .etapa {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-top: 4px;
+  gap: var(--e-3);
+  padding: var(--e-4);
+  border-radius: var(--radio);
+  border: 1.5px dashed var(--linea);
+}
+
+@media (min-width: 1200px) {
+  .semana {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 360px) {

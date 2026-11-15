@@ -13,6 +13,8 @@
   height: 44px;
   border-radius: 50%;
   background: var(--superficie);
+  box-shadow: var(--filete);
+  transition: background-color var(--rapido) ease;
   display: grid;
   place-items: center;
   color: var(--tinta);
@@ -23,7 +25,7 @@
 }
 
 .flecha[data-deshabilitada] {
-  opacity: 0.35;
+  visibility: hidden;
 }
 
 .fecha {
@@ -188,9 +190,10 @@
 .consejo {
   font-size: 14px;
   color: var(--tenue);
-  padding: 12px 14px;
+  padding: var(--e-3) var(--e-4);
   border-radius: var(--radio);
   background: var(--superficie-2);
+  border-left: 3px solid var(--acento);
 }
 
 @media (max-width: 360px) {
@@ -200,6 +203,61 @@
 
   .proteina {
     max-width: none;
+  }
+}
+
+/* ---------- Distribución: una columna en el celular, dos en la computadora ---------- */
+
+.cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-4);
+}
+
+/* En el celular las columnas no existen: cada bloque se ordena solo. */
+.colPrincipal,
+.colLateral {
+  display: contents;
+}
+
+.ordResumen {
+  order: 0;
+}
+
+.comidas {
+  order: 1;
+}
+
+.ordResto {
+  order: 2;
+}
+
+.ordSemana {
+  order: 3;
+}
+
+.ordPie {
+  order: 4;
+}
+
+@media (min-width: 1200px) {
+  .cuerpo {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .colPrincipal,
+  .colLateral {
+    display: flex;
+    flex-direction: column;
+    gap: var(--e-4);
+    min-width: 0;
+  }
+
+  .colLateral {
+    position: sticky;
+    top: var(--e-6);
   }
 }
 
@@ -334,26 +392,72 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--e-2);
   font-size: 14px;
   color: var(--tenue);
 }
 
+/* Sugerencia: repetir lo de ayer con un toque. */
+.copiarAyer {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--e-2);
+  max-width: 100%;
+  min-height: 40px;
+  padding: 9px 14px 9px 12px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--azul-suave);
+  color: var(--tinta);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--rapido) ease;
+}
+
+.copiarAyer svg {
+  flex: none;
+  color: var(--azul);
+  margin-top: 1px;
+}
+
+.copiarAyer:hover {
+  background: color-mix(in srgb, var(--azul-suave) 80%, var(--azul));
+}
+
 .agregar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e-2);
   width: 100%;
   min-height: 48px;
   padding: 11px;
   border-radius: 14px;
-  border: 0;
-  background: var(--acento-suave);
-  color: var(--acento-texto);
-  font-weight: 700;
+  border: 1.5px dashed var(--tinte-fuerte);
+  background: transparent;
+  color: var(--tinta);
+  font-weight: 600;
   font-size: 16px;
   cursor: pointer;
+  transition:
+    background-color var(--rapido) ease,
+    border-color var(--rapido) ease;
+}
+
+.agregar svg {
+  color: var(--acento);
 }
 
 .agregar:hover {
-  background: color-mix(in srgb, var(--acento-suave) 80%, var(--acento));
+  background: var(--tinte);
+  border-color: transparent;
+}
+
+.agregar:active {
+  transform: scale(0.99);
 }
 
 /* ---------- Resto del día ---------- */
@@ -366,8 +470,31 @@
   flex-wrap: wrap;
 }
 
-.agua b {
+.agua .tenue {
+  margin-top: 2px;
+}
+
+/* Subtítulos dentro de «El resto del día». */
+.subtitulo {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  font-size: 16px;
   font-weight: 700;
+  padding-top: var(--e-1);
+}
+
+.subtitulo svg {
+  color: var(--tenue);
+  flex: none;
+}
+
+.agua .subtitulo {
+  padding-top: 0;
+}
+
+.agua .subtitulo svg {
+  color: var(--azul);
 }
 
 .agua .tenue {

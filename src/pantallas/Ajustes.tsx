@@ -1,5 +1,6 @@
 import { useId, useState, type FormEvent } from 'react';
 import { Cargando } from '../app/Estados';
+import { Icono } from '../componentes/Icono';
 import { NOMBRE_APP, VERSION } from '../config';
 import { esFechaIso, fechaLarga, hoyIso } from '../dominio/fechas';
 import { leerNumero } from '../dominio/formato';
@@ -47,7 +48,7 @@ export default function Ajustes() {
   const guardarPerfil = (p: Perfil) => almacen.guardarPerfil(p).catch(() => undefined);
 
   return (
-    <div className="pila">
+    <div className="pila pantalla">
       <header className="cabecera">
         <h1>Tu cuenta y tus objetivos</h1>
       </header>
@@ -64,9 +65,10 @@ export default function Ajustes() {
       <Datos />
       <Instalar />
       <section className="tarjeta" aria-labelledby="aj-cuenta">
-        <h2 id="aj-cuenta" className="titulo-seccion">
-          Cuenta
-        </h2>
+        <h2 id="aj-cuenta" className="titulo-seccion con-icono">
+        <Icono nombre="ajustes" tam={20} />
+        Cuenta
+      </h2>
         <p>
           Ingresaste como <b>{usuario.email}</b>
           {servicios.modo === 'demo' && ' (modo demo: los datos quedan solo en este navegador)'}.
@@ -74,14 +76,15 @@ export default function Ajustes() {
         <p className="tenue">
           Cálculo de comidas con IA: {servicios.ia.disponible ? 'activado' : 'no configurado (falta la dirección del servicio en la configuración del sitio)'}.
         </p>
-        <button type="button" className="boton" onClick={() => void servicios.auth.salir()}>
+        <button type="button" className="boton peligro" onClick={() => void servicios.auth.salir()}>
           Cerrar sesión
         </button>
       </section>
       <section className="tarjeta" aria-labelledby="aj-acerca">
-        <h2 id="aj-acerca" className="titulo-seccion">
-          Acerca de
-        </h2>
+        <h2 id="aj-acerca" className="titulo-seccion con-icono">
+        <Icono nombre="libro" tam={20} />
+        Acerca de
+      </h2>
         <p className="tenue">
           {NOMBRE_APP} {VERSION}. Fotos de los ejercicios:{' '}
           <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener noreferrer">
@@ -114,7 +117,8 @@ function PerfilYRutina({ perfil, alGuardar }: { perfil: Perfil; alGuardar: (p: P
 
   return (
     <form className="tarjeta" onSubmit={enviar} aria-labelledby={`${id}-t`} noValidate>
-      <h2 id={`${id}-t`} className="titulo-seccion">
+      <h2 id={`${id}-t`} className="titulo-seccion con-icono">
+        <Icono nombre="persona" tam={20} />
         Perfil y rutina
       </h2>
       <div className="grilla-campos">
@@ -176,7 +180,8 @@ function ObjetivosForm({ perfil, alGuardar }: { perfil: Perfil; alGuardar: (p: P
 
   return (
     <form className="tarjeta" onSubmit={enviar} aria-labelledby={`${id}-t`} noValidate>
-      <h2 id={`${id}-t`} className="titulo-seccion">
+      <h2 id={`${id}-t`} className="titulo-seccion con-icono">
+        <Icono nombre="disco" tam={20} />
         Objetivos diarios
       </h2>
       <p className="tenue">Los del plan son para recomposición en mantenimiento. Ajustalos en las revisiones, cada 2 semanas.</p>
@@ -281,7 +286,8 @@ function Datos() {
 
   return (
     <section className="tarjeta" aria-labelledby={`${id}-t`}>
-      <h2 id={`${id}-t`} className="titulo-seccion">
+      <h2 id={`${id}-t`} className="titulo-seccion con-icono">
+        <Icono nombre="descargar" tam={20} />
         Tus datos
       </h2>
       <p className="tenue">Descargá una copia de todo (días, entrenamientos, notas y alimentos propios) o importá una copia anterior.</p>
@@ -321,7 +327,8 @@ function Datos() {
 function Instalar() {
   return (
     <section className="tarjeta" aria-labelledby="aj-instalar">
-      <h2 id="aj-instalar" className="titulo-seccion">
+      <h2 id="aj-instalar" className="titulo-seccion con-icono">
+        <Icono nombre="hoy" tam={20} />
         Instalar en el iPhone
       </h2>
       <ol className={estilos.pasos}>

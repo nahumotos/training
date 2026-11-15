@@ -45,7 +45,7 @@ export default function Progreso() {
   const cinturas = dias.filter((d) => d.cintura !== null).map((d) => ({ clave: d.fecha, x: diaMes(d.fecha), y: d.cintura! }));
 
   return (
-    <div className="pila">
+    <div className="pila pantalla amplia">
       <header className="cabecera">
         <h1>Cómo vas</h1>
       </header>
@@ -68,41 +68,49 @@ export default function Progreso() {
 
       <section className="tarjeta" aria-label="Resumen de la semana">
         <dl className={estilos.kpis}>
-          <div>
+          <div data-tono="rojo">
+            <Icono nombre="rutina" tam={20} />
             <dt>Entrenamientos</dt>
             <dd className="num">
               {r.entrenamientos.hechos} <span>de {r.entrenamientos.total}</span>
             </dd>
           </div>
-          <div>
+          <div data-tono="rojo">
+            <Icono nombre="disco" tam={20} />
             <dt>Días con proteína</dt>
             <dd className="num">
               {r.diasConProteina} <span>de {r.diasCargados} cargados</span>
             </dd>
           </div>
-          <div>
+          <div data-tono="rojo">
+            <Icono nombre="comidas" tam={20} />
             <dt>4 comidas con proteína</dt>
             <dd className="num">
               {r.diasCuatroComidas} <span>días</span>
             </dd>
           </div>
-          <div>
+          <div data-tono="rojo">
+            <Icono nombre="disco" tam={20} />
             <dt>Proteína promedio</dt>
             <dd className="num">{r.proteinaProm === null ? '—' : <>{num(r.proteinaProm)} <span>g</span></>}</dd>
           </div>
-          <div>
+          <div data-tono="azul">
+            <Icono nombre="fuego" tam={20} />
             <dt>Calorías promedio</dt>
             <dd className="num">{r.kcalProm === null ? '—' : num(r.kcalProm)}</dd>
           </div>
-          <div>
+          <div data-tono="azul">
+            <Icono nombre="pasos" tam={20} />
             <dt>Pasos promedio</dt>
             <dd className="num">{r.pasosProm === null ? '—' : num(r.pasosProm)}</dd>
           </div>
-          <div>
+          <div data-tono="azul">
+            <Icono nombre="luna" tam={20} />
             <dt>Sueño</dt>
             <dd className="num">{r.acostoProm && r.levantoProm ? <>{r.acostoProm} <span>a</span> {r.levantoProm}</> : '—'}</dd>
           </div>
-          <div>
+          <div data-tono="azul">
+            <Icono nombre="gota" tam={20} />
             <dt>Agua promedio</dt>
             <dd className="num">{r.aguaProm === null ? '—' : litros(r.aguaProm)}</dd>
           </div>
@@ -110,83 +118,87 @@ export default function Progreso() {
         {r.entrenamientos.faltaron.length > 0 && <p className="tenue">Faltaron: {r.entrenamientos.faltaron.join(', ')}.</p>}
       </section>
 
-      <section className="tarjeta" aria-labelledby="graf-proteina">
-        <div className="fila-titulo">
-          <h2 id="graf-proteina">Proteína por día</h2>
-          <span className="tenue">Objetivo {o.proteina.obj} g</span>
-        </div>
-        <GraficoBarras
-          barras={serie.map((s) => ({ clave: s.fecha, etiqueta: `${INICIALES[deIso(s.fecha).getDay()]} ${deIso(s.fecha).getDate()}`, valor: s.p, destacada: s.fecha === hoy }))}
-          objetivo={{ valor: o.proteina.obj, texto: `${o.proteina.obj} g` }}
-          minimoOk={o.proteina.min}
-          descripcion={`Proteína por día de la ${rotuloSemana(lunes).toLowerCase()}`}
-          formato={(v) => num(v)}
-        />
-      </section>
-
-      <section className="tarjeta" aria-labelledby="graf-kcal">
-        <div className="fila-titulo">
-          <h2 id="graf-kcal">Calorías por día</h2>
-          <span className="tenue">
-            Rango {num(o.kcal.min)}–{num(o.kcal.max)}
-          </span>
-        </div>
-        <GraficoBarras
-          barras={serie.map((s) => ({ clave: s.fecha, etiqueta: `${INICIALES[deIso(s.fecha).getDay()]} ${deIso(s.fecha).getDate()}`, valor: s.k, destacada: s.fecha === hoy }))}
-          objetivo={{ valor: Math.round((o.kcal.min + o.kcal.max) / 2), texto: num(Math.round((o.kcal.min + o.kcal.max) / 2)) }}
-          minimoOk={Number.POSITIVE_INFINITY}
-          descripcion={`Calorías por día de la ${rotuloSemana(lunes).toLowerCase()}`}
-          formato={(v) => num(v)}
-          color="kcal"
-        />
-      </section>
-
-      <section className="tarjeta" aria-labelledby="graf-cargas">
-        <div className="fila-titulo">
-          <h2 id="graf-cargas">Cargas por ejercicio</h2>
-          <span className="tenue">Mejor serie de cada sesión</span>
-        </div>
-        <div className="campo">
-          <label htmlFor={idSelect}>Ejercicio</label>
-          <select id={idSelect} className="entrada" value={exId} onChange={(e) => setExId(e.target.value)}>
-            {ejercicios.map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.n}
-                {e.basico ? ' (básico)' : ''}
-              </option>
-            ))}
-          </select>
-        </div>
-        {ex && cargas.length ? (
-          <GraficoLinea
-            puntos={cargas.map((c) => ({ clave: c.fecha, x: diaMes(c.fecha), y: c.peso ?? 0, detalle: textoSerie(ex, c) }))}
-            descripcion={`Evolución de ${ex.n}: de ${num(cargas[0]!.peso ?? 0, 2)} a ${num(cargas.at(-1)!.peso ?? 0, 2)} ${etiquetaUnidad(ex.unidad)}`}
-            formato={(v) => `${num(v, 2)} kg`}
-            unidad={`Mejor serie (${etiquetaUnidad(ex.unidad)})`}
+      <div className="columnas">
+        <section className="tarjeta" aria-labelledby="graf-proteina">
+          <div className="fila-titulo">
+            <h2 id="graf-proteina">Proteína por día</h2>
+            <span className="tenue">Objetivo {o.proteina.obj} g</span>
+          </div>
+          <GraficoBarras
+            barras={serie.map((s) => ({ clave: s.fecha, etiqueta: `${INICIALES[deIso(s.fecha).getDay()]} ${deIso(s.fecha).getDate()}`, valor: s.p, destacada: s.fecha === hoy }))}
+            objetivo={{ valor: o.proteina.obj, texto: `${o.proteina.obj} g` }}
+            minimoOk={o.proteina.min}
+            descripcion={`Proteína por día de la ${rotuloSemana(lunes).toLowerCase()}`}
+            formato={(v) => num(v)}
           />
-        ) : (
-          <p className="tenue">Todavía no registraste series de este ejercicio.</p>
-        )}
-      </section>
+        </section>
 
-      <section className="tarjeta" aria-labelledby="graf-medidas">
-        <div className="fila-titulo">
-          <h2 id="graf-medidas">Peso y cintura</h2>
-          <span className="tenue">Se cargan en Comidas → El resto del día</span>
-        </div>
-        <h3 className="rotulo">Peso</h3>
-        {pesos.length ? (
-          <GraficoLinea puntos={pesos} descripcion={`Peso: último ${num(pesos.at(-1)!.y, 1)} kg`} formato={(v) => `${num(v, 1)} kg`} unidad="Peso (kg)" />
-        ) : (
-          <p className="tenue">Sin mediciones todavía.</p>
-        )}
-        <h3 className="rotulo">Cintura</h3>
-        {cinturas.length ? (
-          <GraficoLinea puntos={cinturas} descripcion={`Cintura: última ${num(cinturas.at(-1)!.y, 1)} cm`} formato={(v) => `${num(v, 1)} cm`} unidad="Cintura (cm)" />
-        ) : (
-          <p className="tenue">Sin mediciones todavía. Medila cada 2 semanas a la altura del ombligo, en ayunas.</p>
-        )}
-      </section>
+        <section className="tarjeta" aria-labelledby="graf-kcal">
+          <div className="fila-titulo">
+            <h2 id="graf-kcal">Calorías por día</h2>
+            <span className="tenue">
+              Rango {num(o.kcal.min)}–{num(o.kcal.max)}
+            </span>
+          </div>
+          <GraficoBarras
+            barras={serie.map((s) => ({ clave: s.fecha, etiqueta: `${INICIALES[deIso(s.fecha).getDay()]} ${deIso(s.fecha).getDate()}`, valor: s.k, destacada: s.fecha === hoy }))}
+            objetivo={{ valor: Math.round((o.kcal.min + o.kcal.max) / 2), texto: num(Math.round((o.kcal.min + o.kcal.max) / 2)) }}
+            minimoOk={Number.POSITIVE_INFINITY}
+            descripcion={`Calorías por día de la ${rotuloSemana(lunes).toLowerCase()}`}
+            formato={(v) => num(v)}
+            color="kcal"
+          />
+        </section>
+      </div>
+
+      <div className="columnas">
+        <section className="tarjeta" aria-labelledby="graf-cargas">
+          <div className="fila-titulo">
+            <h2 id="graf-cargas">Cargas por ejercicio</h2>
+            <span className="tenue">Mejor serie de cada sesión</span>
+          </div>
+          <div className="campo">
+            <label htmlFor={idSelect}>Ejercicio</label>
+            <select id={idSelect} className="entrada" value={exId} onChange={(e) => setExId(e.target.value)}>
+              {ejercicios.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.n}
+                  {e.basico ? ' (básico)' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+          {ex && cargas.length ? (
+            <GraficoLinea
+              puntos={cargas.map((c) => ({ clave: c.fecha, x: diaMes(c.fecha), y: c.peso ?? 0, detalle: textoSerie(ex, c) }))}
+              descripcion={`Evolución de ${ex.n}: de ${num(cargas[0]!.peso ?? 0, 2)} a ${num(cargas.at(-1)!.peso ?? 0, 2)} ${etiquetaUnidad(ex.unidad)}`}
+              formato={(v) => `${num(v, 2)} kg`}
+              unidad={`Mejor serie (${etiquetaUnidad(ex.unidad)})`}
+            />
+          ) : (
+            <p className="tenue">Todavía no registraste series de este ejercicio.</p>
+          )}
+        </section>
+
+        <section className="tarjeta" aria-labelledby="graf-medidas">
+          <div className="fila-titulo">
+            <h2 id="graf-medidas">Peso y cintura</h2>
+            <span className="tenue">Se cargan en Comidas → El resto del día</span>
+          </div>
+          <h3 className="rotulo">Peso</h3>
+          {pesos.length ? (
+            <GraficoLinea puntos={pesos} descripcion={`Peso: último ${num(pesos.at(-1)!.y, 1)} kg`} formato={(v) => `${num(v, 1)} kg`} unidad="Peso (kg)" />
+          ) : (
+            <p className="tenue">Sin mediciones todavía.</p>
+          )}
+          <h3 className="rotulo">Cintura</h3>
+          {cinturas.length ? (
+            <GraficoLinea puntos={cinturas} descripcion={`Cintura: última ${num(cinturas.at(-1)!.y, 1)} cm`} formato={(v) => `${num(v, 1)} cm`} unidad="Cintura (cm)" />
+          ) : (
+            <p className="tenue">Sin mediciones todavía. Medila cada 2 semanas a la altura del ombligo, en ayunas.</p>
+          )}
+        </section>
+      </div>
 
       <ResumenRevision key={lunes} lunes={lunes} resumen={r} objetivos={o} />
     </div>

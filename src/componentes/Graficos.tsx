@@ -131,10 +131,11 @@ export function GraficoLinea({
           {puntos.map((p, i) => (
             <circle key={p.clave} cx={x(i)} cy={y(p.y)} r={i === puntos.length - 1 ? 5 : 3} className={i === puntos.length - 1 ? estilos.puntoFinal : estilos.punto} />
           ))}
+          {/* La cifra del último punto se alinea hacia adentro para no cortarse en el borde. */}
           <text
-            x={Math.min(Math.max(xUlt, 30), ancho - 30)}
-            y={y(ultimo.y) - 10}
-            textAnchor="middle"
+            x={xUlt > ancho / 2 ? Math.min(xUlt + 6, ancho - 2) : Math.max(xUlt - 6, 2)}
+            y={y(ultimo.y) - 12}
+            textAnchor={xUlt > ancho / 2 ? 'end' : 'start'}
             className={estilos.valor}
           >
             {formato(ultimo.y)}

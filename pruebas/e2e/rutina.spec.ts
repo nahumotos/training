@@ -132,9 +132,11 @@ test('ver cómo se hace un ejercicio carga las imágenes', async ({ page }) => {
   await expect(ej.getByRole('button', { name: /^Ocultar cómo se hace/ })).toHaveAttribute('aria-expanded', 'true');
   const imagenes = ej.locator('figure img, [id$="-anim"] img');
   await expect(imagenes.first()).toBeVisible();
-  const cargadas = await imagenes.evaluateAll((els) => els.map((e) => (e as HTMLImageElement).complete && (e as HTMLImageElement).naturalWidth > 0));
-  expect(cargadas.length).toBeGreaterThan(0);
-  expect(cargadas.every(Boolean)).toBe(true);
+  // Las imágenes se cargan al quedar a la vista (carga diferida).
+  await imagenes.first().scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => imagenes.evaluateAll((els) => els.length > 0 && els.every((e) => (e as HTMLImageElement).complete && (e as HTMLImageElement).naturalWidth > 0)))
+    .toBe(true);
 });
 
 test('la entrada en calor se abre y recuerda el estado', async ({ page }) => {

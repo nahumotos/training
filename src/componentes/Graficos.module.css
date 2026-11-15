@@ -10,7 +10,7 @@
 
 .area {
   position: relative;
-  height: 120px;
+  height: 140px;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
@@ -28,7 +28,7 @@
   width: 100%;
   max-width: 30px;
   min-height: 4px;
-  border-radius: 999px;
+  border-radius: 8px 8px 4px 4px;
 }
 
 .proteina {

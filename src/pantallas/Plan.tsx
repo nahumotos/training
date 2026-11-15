@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Icono } from '../componentes/Icono';
 import { fechaLarga, sumarDias } from '../dominio/fechas';
 import { num } from '../dominio/formato';
 import { ETAPAS } from '../dominio/rutina';
@@ -33,7 +34,7 @@ export default function Plan() {
   }, [hash]);
 
   return (
-    <article className="pila">
+    <article className="pila pantalla">
       <header className="cabecera">
         <p className="ceja">Plan Fase 1</p>
         <h1>Recomposición: más músculo, menos panza</h1>
@@ -51,7 +52,8 @@ export default function Plan() {
       </nav>
 
       <section id="estrategia" className="tarjeta" aria-labelledby="t-estrategia">
-        <h2 id="t-estrategia" className="titulo-seccion">
+        <h2 id="t-estrategia" className="titulo-seccion con-icono">
+          <Icono nombre="disco" tam={20} />
           Estrategia
         </h2>
         <p>
@@ -66,7 +68,8 @@ export default function Plan() {
       </section>
 
       <section id="semana" className="tarjeta" aria-labelledby="t-semana">
-        <h2 id="t-semana" className="titulo-seccion">
+        <h2 id="t-semana" className="titulo-seccion con-icono">
+          <Icono nombre="hoy" tam={20} />
           Semana tipo
         </h2>
         <div className="desborde">
@@ -101,7 +104,8 @@ export default function Plan() {
       </section>
 
       <section id="reglas" className="tarjeta" aria-labelledby="t-reglas">
-        <h2 id="t-reglas" className="titulo-seccion">
+        <h2 id="t-reglas" className="titulo-seccion con-icono">
+          <Icono nombre="rutina" tam={20} />
           Reglas de entrenamiento
         </h2>
         <h3 className="rotulo">Calentamiento (8–10 min)</h3>
@@ -143,7 +147,8 @@ export default function Plan() {
       </section>
 
       <section id="hombro" className="tarjeta" aria-labelledby="t-hombro">
-        <h2 id="t-hombro" className="titulo-seccion">
+        <h2 id="t-hombro" className="titulo-seccion con-icono">
+          <Icono nombre="persona" tam={20} />
           Hombro
         </h2>
         <p>
@@ -182,7 +187,8 @@ export default function Plan() {
       </section>
 
       <section id="nutricion" className="tarjeta" aria-labelledby="t-nutricion">
-        <h2 id="t-nutricion" className="titulo-seccion">
+        <h2 id="t-nutricion" className="titulo-seccion con-icono">
+          <Icono nombre="comidas" tam={20} />
           Nutrición
         </h2>
         <p>
@@ -269,7 +275,8 @@ export default function Plan() {
       </section>
 
       <section id="movimiento" className="tarjeta" aria-labelledby="t-movimiento">
-        <h2 id="t-movimiento" className="titulo-seccion">
+        <h2 id="t-movimiento" className="titulo-seccion con-icono">
+          <Icono nombre="pasos" tam={20} />
           Movimiento
         </h2>
         <ul className="lista-reglas">
@@ -283,7 +290,8 @@ export default function Plan() {
       </section>
 
       <section id="habitos" className="tarjeta" aria-labelledby="t-habitos">
-        <h2 id="t-habitos" className="titulo-seccion">
+        <h2 id="t-habitos" className="titulo-seccion con-icono">
+          <Icono nombre="series" tam={20} />
           Hábitos por etapas
         </h2>
         <p>Pasás a la etapa siguiente cuando cumplís la anterior 5 de 7 días. Para el sueño, el ancla es la hora de levantarte.</p>
@@ -310,7 +318,8 @@ export default function Plan() {
       </section>
 
       <section id="suplementos" className="tarjeta" aria-labelledby="t-suplementos">
-        <h2 id="t-suplementos" className="titulo-seccion">
+        <h2 id="t-suplementos" className="titulo-seccion con-icono">
+          <Icono nombre="gota" tam={20} />
           Suplementos
         </h2>
         <p>Ninguno es necesario para progresar.</p>
@@ -322,7 +331,8 @@ export default function Plan() {
       </section>
 
       <section id="seguimiento" className="tarjeta" aria-labelledby="t-seguimiento">
-        <h2 id="t-seguimiento" className="titulo-seccion">
+        <h2 id="t-seguimiento" className="titulo-seccion con-icono">
+          <Icono nombre="progreso" tam={20} />
           Seguimiento
         </h2>
         <ul className="lista-reglas">

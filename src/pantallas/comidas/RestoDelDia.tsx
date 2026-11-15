@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { Icono } from '../../componentes/Icono';
 import { Paso } from '../../componentes/Paso';
 import { leerNumero, litros, num } from '../../dominio/formato';
 import { LIMITES } from '../../dominio/saneo';
@@ -96,7 +97,10 @@ export function RestoDelDia({ dia, objetivoAgua, cambiar }: { dia: Dia; objetivo
 
       <div className={estilos.agua}>
         <div>
-          <b>Agua</b>
+          <h3 className={estilos.subtitulo}>
+            <Icono nombre="gota" tam={18} />
+            Agua
+          </h3>
           <p className="tenue">Objetivo: {litros(objetivoAgua)}, contando el gimnasio. El mate no cuenta.</p>
         </div>
         <Paso
@@ -109,6 +113,10 @@ export function RestoDelDia({ dia, objetivoAgua, cambiar }: { dia: Dia; objetivo
       </div>
       <p className="ayuda">Cada toque suma o resta un vaso de 250 ml.</p>
 
+      <h3 className={estilos.subtitulo}>
+        <Icono nombre="luna" tam={18} />
+        Movimiento, sueño y energía
+      </h3>
       <div className="grilla-campos">
         <div className="campo">
           <label htmlFor={`${id}-pasos`}>Pasos</label>
@@ -142,6 +150,10 @@ export function RestoDelDia({ dia, objetivoAgua, cambiar }: { dia: Dia; objetivo
         <p className="ayuda">1 = sin energía · 5 = con mucha energía</p>
       </fieldset>
 
+      <h3 className={estilos.subtitulo}>
+        <Icono nombre="balanza" tam={18} />
+        Cuerpo y notas
+      </h3>
       <div className="grilla-campos">
         <div className="campo">
           <label htmlFor={`${id}-peso`}>Peso (kg)</label>
