@@ -6,8 +6,8 @@
   align-items: center;
   gap: var(--e-3) var(--e-4);
   padding: var(--e-4);
-  background: var(--superficie-2);
-  border-radius: var(--radio);
+  background: var(--superficie);
+  border-radius: var(--radio-panel);
   font-size: 16px;
   line-height: 1.45;
 }
@@ -30,8 +30,8 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: var(--superficie);
-  color: var(--acento);
+  background: var(--superficie-2);
+  color: var(--rosa);
 }
 
 .avisoHoy[data-tipo='descanso'] .iconoAviso {
@@ -78,6 +78,7 @@
 
 .tarjetaDia:active {
   transform: scale(0.98);
+  background: color-mix(in srgb, var(--superficie) 94%, var(--tinta));
 }
 
 .arriba {
@@ -87,18 +88,17 @@
   gap: 8px;
 }
 
-/* Cada día lleva su disco: rojo para torso, azul para pierna. */
+/* Cada día lleva su círculo: rosa para torso, azul para pierna. */
 .disco {
   --c: var(--torso);
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: radial-gradient(circle, transparent 0 15px, rgb(0 0 0 / 0.14) 15.5px 16.5px, transparent 17px), var(--c);
+  background: var(--c);
   display: grid;
   place-items: center;
   flex: none;
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   font-size: 17px;
   color: #fff;
 }
@@ -124,7 +124,6 @@
 
 .nombreDia {
   font-weight: 750;
-  font-stretch: var(--ancho-titulo);
   font-size: 21px;
   line-height: 1.1;
 }
@@ -161,7 +160,7 @@
   padding-right: 10px;
   font-weight: 600;
   font-size: 15px;
-  color: var(--acento);
+  color: var(--acento-texto);
   text-decoration: none;
 }
 
@@ -231,7 +230,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--acento);
+  background: var(--rosa);
   transform-origin: left;
   transition: transform 0.35s ease;
 }
@@ -353,7 +352,6 @@
   color: var(--acento-texto);
   font-size: 14px;
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   vertical-align: 2px;
 }
 
@@ -381,7 +379,6 @@
 .datos dd {
   margin: 0;
   font-weight: 750;
-  font-stretch: var(--ancho-titulo);
   font-size: 18px;
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
@@ -420,9 +417,8 @@
 }
 
 .sugerido {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
-  opacity: 0.8;
   margin-right: 6px;
 }
 
@@ -484,14 +480,13 @@
 
 .series tbody th {
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   font-size: 17px;
   color: var(--tenue);
   padding-left: 6px;
 }
 
 .series tr[data-hecha] th {
-  color: var(--acento);
+  color: var(--acento-texto);
 }
 
 .series td {
@@ -537,10 +532,30 @@
 }
 
 .series tr[data-hecha] .marcar {
+  position: relative;
   background: var(--acento);
   border-color: var(--acento);
   color: var(--acento-tinta);
-  animation: cargar 0.3s ease-out;
+}
+
+/* Recién marcada: el círculo hace «pop» y suelta una onda. */
+.series tr[data-hecha] .marcar[data-recien] {
+  animation: cargar 0.42s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.series tr[data-hecha] .marcar[data-recien]::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--rosa);
+  opacity: 0;
+  animation: onda 0.6s ease-out;
+  pointer-events: none;
+}
+
+.series tr[data-hecha] th {
+  transition: color 0.2s ease;
 }
 
 .series tr[data-hecha] .celda {
@@ -549,13 +564,24 @@
 
 @keyframes cargar {
   0% {
-    transform: scale(0.85);
+    transform: scale(0.8);
   }
-  60% {
-    transform: scale(1.06);
+  55% {
+    transform: scale(1.12);
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes onda {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.6);
   }
 }
 
@@ -575,7 +601,7 @@
 }
 
 .aviso {
-  color: var(--acento);
+  color: var(--acento-texto);
   font-weight: 500;
 }
 

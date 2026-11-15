@@ -42,6 +42,8 @@ export function TarjetaEjercicio({
   const [verTecnica, setVerTecnica] = useState(false);
   const [editandoNota, setEditandoNota] = useState(false);
   const [error, setError] = useState<{ fila: number; texto: string } | null>(null);
+  /** La última serie marcada en esta visita: solo esa hace la animación de «hecha». */
+  const [recien, setRecien] = useState<number | null>(null);
   const repsRefs = useRef<(HTMLInputElement | null)[]>([]);
   const pesoRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -272,7 +274,11 @@ export function TarjetaEjercicio({
                     className={estilos.marcar}
                     aria-pressed={hecha}
                     aria-label={hecha ? `Serie ${i + 1} hecha. Tocá para desmarcarla` : `Marcar la serie ${i + 1} como hecha`}
-                    onClick={() => marcar(i)}
+                    data-recien={recien === i || undefined}
+                    onClick={() => {
+                      if (!hecha) setRecien(i);
+                      marcar(i);
+                    }}
                   >
                     <Icono nombre="check" tam={22} />
                   </button>

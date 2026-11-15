@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { EnlaceDeslizante } from '../../app/EnlaceDeslizante';
 import { Icono } from '../../componentes/Icono';
 import { DIAS_HISTORIAL } from '../../config';
 import { fechaCorta, fechaLarga, lunesDe, sumarDias } from '../../dominio/fechas';
@@ -33,7 +34,7 @@ export function Rutina() {
           const ultima = [...sesiones].reverse().find((s) => s.dia === d.id && seriesHechas(s) > 0);
           const esHoy = toca.tipo === 'entreno' && toca.dia.id === d.id;
           return (
-            <Link key={d.id} to={`/rutina/${d.id}`} className={estilos.tarjetaDia} data-hoy={esHoy || undefined}>
+            <EnlaceDeslizante key={d.id} to={`/rutina/${d.id}`} paso="adelante" className={estilos.tarjetaDia} data-hoy={esHoy || undefined}>
               <span className={estilos.arriba}>
                 <span className={estilos.disco} data-tipo={d.tipo} aria-hidden="true">
                   {d.letra}
@@ -56,7 +57,7 @@ export function Rutina() {
                   `${d.ex.length} ejercicios · ${totalSeries(d)} series`
                 )}
               </span>
-            </Link>
+            </EnlaceDeslizante>
           );
         })}
       </nav>

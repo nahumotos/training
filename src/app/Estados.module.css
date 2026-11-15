@@ -51,7 +51,6 @@
 .caja h1 {
   font-size: 30px;
   font-weight: 750;
-  font-stretch: var(--ancho-titulo);
   letter-spacing: -0.02em;
 }
 

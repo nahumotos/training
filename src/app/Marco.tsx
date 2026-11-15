@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Icono, type NombreIcono } from '../componentes/Icono';
 import { NOMBRE_APP } from '../config';
 import { useDatos } from '../estado/Proveedor';
+import { elegirTema, useTema } from '../estado/tema';
 import estilos from './Marco.module.css';
 
 const SECCIONES: { a: string; texto: string; icono: NombreIcono; fin?: boolean }[] = [
@@ -33,6 +34,18 @@ function EstadoConexion() {
   return null;
 }
 
+/** Pasa de claro a oscuro y al revés. Para volver a seguir al sistema: Ajustes → Apariencia. */
+function BotonTema() {
+  const { tema } = useTema();
+  const oscuro = tema === 'oscuro';
+  return (
+    <button type="button" className={estilos.icono} onClick={() => elegirTema(oscuro ? 'claro' : 'oscuro')} aria-label={oscuro ? 'Pasar a modo claro' : 'Pasar a modo oscuro'}>
+      <Icono nombre={oscuro ? 'sol' : 'luna'} />
+      <span className={estilos.textoRiel}>{oscuro ? 'Modo claro' : 'Modo oscuro'}</span>
+    </button>
+  );
+}
+
 export function Marco({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const principal = useRef<HTMLElement>(null);
@@ -59,10 +72,13 @@ export function Marco({ children }: { children: ReactNode }) {
           {NOMBRE_APP}
         </Link>
         <EstadoConexion />
-        <NavLink to="/ajustes" className={estilos.ajustes} aria-label="Ajustes">
-          <Icono nombre="ajustes" />
-          <span className={estilos.textoAjustes}>Ajustes</span>
-        </NavLink>
+        <div className={estilos.herramientas}>
+          <BotonTema />
+          <NavLink to="/ajustes" className={estilos.icono} aria-label="Ajustes">
+            <Icono nombre="ajustes" />
+            <span className={estilos.textoRiel}>Ajustes</span>
+          </NavLink>
+        </div>
       </header>
       <nav className={estilos.nav} aria-label="Principal">
         {SECCIONES.map((s) => (

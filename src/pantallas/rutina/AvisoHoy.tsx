@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { EnlaceDeslizante } from '../../app/EnlaceDeslizante';
 import { Icono } from '../../componentes/Icono';
 import { fechaLarga } from '../../dominio/fechas';
 import type { QueToca } from '../../dominio/rutina';
@@ -69,9 +70,15 @@ export function AvisoHoy({ toca, conBoton = false }: { toca: QueToca; conBoton?:
       )}
       <p>{texto}</p>
       {conBoton && enlace && (
-        <Link to={enlace.a} className="boton primario chico">
-          {enlace.texto}
-        </Link>
+        enlace.a.startsWith('/rutina/') ? (
+          <EnlaceDeslizante to={enlace.a} paso="adelante" className="boton primario chico">
+            {enlace.texto}
+          </EnlaceDeslizante>
+        ) : (
+          <Link to={enlace.a} className="boton primario chico">
+            {enlace.texto}
+          </Link>
+        )
       )}
     </div>
   );

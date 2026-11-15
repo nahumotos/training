@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { Anillos } from '../../componentes/Anillos';
 import { GraficoBarras, GraficoLinea } from '../../componentes/Graficos';
 import { Icono } from '../../componentes/Icono';
 import { DIAS_HISTORIAL } from '../../config';
@@ -68,34 +69,34 @@ export default function Progreso() {
 
       <section className="tarjeta" aria-label="Resumen de la semana">
         <dl className={estilos.kpis}>
-          <div data-tono="rojo">
-            <Icono nombre="rutina" tam={20} />
+          <div>
+            <Anillos tam={34} grosor={5} anillos={[{ tono: 'proteina', valor: r.entrenamientos.hechos, objetivo: r.entrenamientos.total }]} />
             <dt>Entrenamientos</dt>
             <dd className="num">
               {r.entrenamientos.hechos} <span>de {r.entrenamientos.total}</span>
             </dd>
           </div>
-          <div data-tono="rojo">
-            <Icono nombre="disco" tam={20} />
+          <div>
+            <Anillos tam={34} grosor={5} anillos={[{ tono: 'proteina', valor: r.diasConProteina, objetivo: Math.max(r.diasCargados, 1) }]} />
             <dt>Días con proteína</dt>
             <dd className="num">
               {r.diasConProteina} <span>de {r.diasCargados} cargados</span>
             </dd>
           </div>
-          <div data-tono="rojo">
-            <Icono nombre="comidas" tam={20} />
+          <div>
+            <Anillos tam={34} grosor={5} anillos={[{ tono: 'proteina', valor: r.diasCuatroComidas, objetivo: Math.max(r.diasCargados, 1) }]} />
             <dt>4 comidas con proteína</dt>
             <dd className="num">
               {r.diasCuatroComidas} <span>días</span>
             </dd>
           </div>
-          <div data-tono="rojo">
-            <Icono nombre="disco" tam={20} />
+          <div>
+            <Anillos tam={34} grosor={5} anillos={[{ tono: 'proteina', valor: r.proteinaProm ?? 0, objetivo: o.proteina.obj, ok: r.proteinaProm !== null && r.proteinaProm >= o.proteina.min }]} />
             <dt>Proteína promedio</dt>
             <dd className="num">{r.proteinaProm === null ? '—' : <>{num(r.proteinaProm)} <span>g</span></>}</dd>
           </div>
-          <div data-tono="azul">
-            <Icono nombre="fuego" tam={20} />
+          <div>
+            <Anillos tam={34} grosor={5} anillos={[{ tono: 'kcal', valor: r.kcalProm ?? 0, objetivo: o.kcal.min }]} />
             <dt>Calorías promedio</dt>
             <dd className="num">{r.kcalProm === null ? '—' : num(r.kcalProm)}</dd>
           </div>
@@ -109,8 +110,8 @@ export default function Progreso() {
             <dt>Sueño</dt>
             <dd className="num">{r.acostoProm && r.levantoProm ? <>{r.acostoProm} <span>a</span> {r.levantoProm}</> : '—'}</dd>
           </div>
-          <div data-tono="azul">
-            <Icono nombre="gota" tam={20} />
+          <div>
+            <Anillos tam={34} grosor={5} anillos={[{ tono: 'agua', valor: r.aguaProm ?? 0, objetivo: o.agua, ok: r.aguaProm !== null && r.aguaProm >= o.agua }]} />
             <dt>Agua promedio</dt>
             <dd className="num">{r.aguaProm === null ? '—' : litros(r.aguaProm)}</dd>
           </div>

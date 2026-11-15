@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Disco } from '../componentes/Disco';
+import { Anillos } from '../componentes/Anillos';
+import { Cifra } from '../componentes/Cifra';
 import { Icono } from '../componentes/Icono';
 import { DIAS_HISTORIAL } from '../config';
-import { llegaProteina, proximaComida, totalesDia } from '../dominio/comidas';
+import { estadoKcal, llegaProteina, proximaComida, totalesDia } from '../dominio/comidas';
 import { capitalizar, fechaLarga, lunesDe, sumarDias } from '../dominio/fechas';
 import { litros, num } from '../dominio/formato';
 import { resumenSemana } from '../dominio/progreso';
@@ -31,6 +32,7 @@ export function Hoy() {
   const etapa = etapaActual(hoy, perfil.inicioRutina);
   const numSemana = semanaDelPlan(hoy, perfil.inicioRutina);
   const okP = llegaProteina(totales.p, o);
+  const kcal = estadoKcal(totales.k, o);
   const saludo = perfil.nombre ? `Hola, ${perfil.nombre}` : capitalizar(fechaLarga(hoy));
 
   return (
@@ -69,19 +71,29 @@ export function Hoy() {
             </Link>
           </div>
           <div className={estilos.resumen}>
-            <Disco valor={totales.p} objetivo={o.proteina.obj} banda={o.proteina} ok={okP}>
-              <b className={`grabado ${estilos.cifraDisco}`}>{num(totales.p)}</b>{' '}
+            <Anillos
+              tam={156}
+              anillos={[
+                { tono: 'proteina', valor: totales.p, objetivo: o.proteina.obj, marca: o.proteina.min, ok: okP },
+                { tono: 'kcal', valor: totales.k, objetivo: o.kcal.min, ok: kcal.tipo === 'rango', exceso: kcal.tipo === 'arriba' },
+              ]}
+            >
+              <b className={`grabado ${estilos.cifraDisco}`}>
+                <Cifra valor={totales.p} />
+              </b>{' '}
               <span className={estilos.deDisco}>de {o.proteina.obj} g</span>{' '}
               <span className={estilos.nombreDisco}>de proteína</span>
-            </Disco>
+            </Anillos>
             <dl className={estilos.datos}>
               <div>
                 <dt>
-                  <Icono nombre="fuego" tam={16} />
+                  <span className={estilos.punto} data-tono="kcal" aria-hidden="true" />
                   Calorías
                 </dt>
                 <dd>
-                  <b className="grabado">{num(totales.k)}</b>{' '}
+                  <b className="grabado">
+                    <Cifra valor={totales.k} />
+                  </b>{' '}
                   <span>
                     de {num(o.kcal.min)}–{num(o.kcal.max)}
                   </span>
@@ -89,7 +101,7 @@ export function Hoy() {
               </div>
               <div>
                 <dt>
-                  <Icono nombre="comidas" tam={16} />
+                  <span className={estilos.punto} aria-hidden="true" />
                   Comidas con proteína
                 </dt>
                 <dd>
@@ -128,22 +140,24 @@ export function Hoy() {
           </Link>
         </div>
         <ul className={estilos.semana}>
-          <li className="dato" data-tono="rojo">
-            <Icono nombre="rutina" tam={20} />
+          <li className="dato">
+            <Anillos tam={36} grosor={5} anillos={[{ tono: 'proteina', valor: resumen.entrenamientos.hechos, objetivo: resumen.entrenamientos.total }]} />
             <b className="grabado">
               {resumen.entrenamientos.hechos}/{resumen.entrenamientos.total}
             </b>{' '}
             <span>entrenamientos</span>
           </li>
-          <li className="dato" data-tono="rojo">
-            <Icono nombre="disco" tam={20} />
+          <li className="dato">
+            <Anillos tam={36} grosor={5} anillos={[{ tono: 'proteina', valor: resumen.diasConProteina, objetivo: Math.max(resumen.diasCargados, 1) }]} />
             <b className="grabado">
               {resumen.diasConProteina}/{Math.max(resumen.diasCargados, 1)}
             </b>{' '}
             <span>días con {o.proteina.min} g o más</span>
           </li>
           <li className="dato" data-tono="azul">
-            <Icono nombre="pasos" tam={20} />
+            <span className={estilos.iconoDato}>
+              <Icono nombre="pasos" tam={20} />
+            </span>
             <b className="grabado">{resumen.pasosProm === null ? '—' : num(resumen.pasosProm)}</b>{' '}
             <span>pasos promedio</span>
           </li>

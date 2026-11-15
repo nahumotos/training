@@ -81,7 +81,6 @@
 .etiquetas b {
   color: var(--tinta);
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   font-variant-numeric: tabular-nums;
   font-size: 14px;
 }
@@ -131,7 +130,6 @@
 
 .valor {
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   font-size: 14px;
   fill: var(--tinta);
 }

@@ -61,17 +61,17 @@
   background: var(--superficie-2);
 }
 
-.kpis > div > svg {
+.kpis > div > :first-child {
   grid-area: icono;
-  color: var(--tenue);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
-.kpis > div[data-tono='rojo'] > svg {
-  color: var(--acento);
-}
-
-.kpis > div[data-tono='azul'] > svg {
+/* Los indicadores sin objetivo llevan un ícono en un círculo del mismo tamaño que los anillos. */
+.kpis > div > svg:first-child {
+  box-sizing: content-box;
+  padding: 7px;
+  border-radius: 50%;
+  background: var(--azul-suave);
   color: var(--azul);
 }
 
@@ -85,8 +85,7 @@
 .kpis dd {
   grid-area: valor;
   margin: 0;
-  font-weight: 800;
-  font-stretch: var(--ancho-grabado);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   font-size: 22px;
   letter-spacing: -0.02em;
@@ -95,7 +94,6 @@
 }
 
 .kpis dd span {
-  font-stretch: 100%;
   letter-spacing: 0;
   font-weight: 500;
   font-size: 13px;

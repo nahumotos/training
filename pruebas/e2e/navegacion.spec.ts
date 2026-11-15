@@ -95,3 +95,30 @@ test('una fecha inválida o futura en Comidas no rompe la app', async ({ page })
   await page.goto('/comidas/2030-01-01');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });
+
+test('el tema se cambia a mano, queda guardado y puede volver a seguir al sistema', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto('/');
+  const html = page.locator('html');
+  await expect(html).toHaveAttribute('data-tema', 'claro');
+
+  await page.getByRole('button', { name: 'Pasar a modo oscuro' }).click();
+  await expect(html).toHaveAttribute('data-tema', 'oscuro');
+  await expect(page.locator('meta[name="theme-color"]').first()).toHaveAttribute('content', '#000000');
+  await accesible(page);
+
+  // Se recuerda al volver a abrir (lo aplica public/tema.js antes de pintar).
+  await page.reload();
+  await expect(html).toHaveAttribute('data-tema', 'oscuro');
+
+  await page.goto('/ajustes');
+  const apariencia = page.getByRole('radiogroup', { name: 'Apariencia' });
+  await expect(apariencia.getByRole('radio', { name: 'Oscuro' })).toBeChecked();
+  await apariencia.getByRole('radio', { name: 'Automático' }).check();
+  await expect(html).toHaveAttribute('data-tema', 'claro');
+
+  // En automático acompaña al sistema cuando cambia.
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(html).toHaveAttribute('data-tema', 'oscuro');
+  await expect(page.getByRole('button', { name: 'Pasar a modo claro' })).toBeVisible();
+});

@@ -28,7 +28,6 @@
   min-width: 70px;
   text-align: center;
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   font-size: 17px;
   font-variant-numeric: tabular-nums;
 }

@@ -57,7 +57,6 @@
 .encabezado h2 {
   font-size: 21px;
   font-weight: 750;
-  font-stretch: var(--ancho-titulo);
 }
 
 .cuerpo {

@@ -1,0 +1,84 @@
+.anillos {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+
+.anillos svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.anillo {
+  color: var(--rosa);
+  transition: color 0.5s ease;
+}
+
+.anillo[data-tono='kcal'],
+.anillo[data-tono='agua'] {
+  color: var(--azul-vivo);
+}
+
+.anillo[data-ok] {
+  color: var(--bien-vivo);
+}
+
+.anillo[data-exceso] {
+  color: var(--amarillo);
+}
+
+.pista {
+  fill: none;
+  stroke: currentColor;
+  stroke-opacity: 0.18;
+}
+
+/* Se llena al aparecer y, después, avanza suave desde donde estaba cuando cambia el valor. */
+.relleno {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation: llenar 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+/* Objetivo cumplido: el anillo se ensancha y se desvanece una vez, como un destello
+   (la animación la lanza el componente). */
+.brillo {
+  fill: none;
+  stroke: currentColor;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+/* El mínimo recomendado: un corte fino en el anillo. */
+.marca {
+  stroke: var(--superficie);
+  stroke-width: 2;
+}
+
+.centro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 64%;
+}
+
+@keyframes llenar {
+  from {
+    stroke-dashoffset: var(--vacio);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .relleno {
+    transition: none;
+  }
+}

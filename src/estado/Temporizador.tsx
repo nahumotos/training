@@ -98,7 +98,7 @@ export function ProveedorTemporizador({ children }: { children: ReactNode }) {
         <div className={estilos.barra} role="timer" aria-live="off" data-termino={termino || undefined}>
           {estado ? (
             <>
-              <span className={estilos.progreso} style={{ '--p': estado.total ? restante / estado.total : 0 } as CSSProperties} aria-hidden="true" />
+              <span className={estilos.progreso} style={{ '--resto': estado.total ? restante / estado.total : 0 } as CSSProperties} aria-hidden="true" />
               <div className={estilos.info}>
                 <span className={estilos.etiqueta}>Descanso de {estado.etiqueta}</span>
                 <span className={estilos.tiempo}>

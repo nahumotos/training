@@ -106,7 +106,7 @@ pruebas/        servidor de prueba y pruebas de punta a punta (Playwright)
 | Firebase Auth + Firestore + Hosting | Gratis en el plan Spark, sincroniza entre dispositivos y trae caché sin señal. |
 | Cloudflare Workers | Servidor mínimo y gratuito (sin tarjeta) para guardar la clave de la IA. |
 | API de Claude | Estimación de comidas: Haiku 5.5 para texto, Sonnet 5.5 para fotos. |
-| Archivo, tipografía variable (@fontsource-variable) | Una sola familia y un solo archivo: ancha y pesada para las cifras, normal para leer. Se sirve desde el mismo sitio. |
+| Inter, tipografía variable (@fontsource-variable) | Una sola familia y un solo archivo, parecida a la letra del iPhone, con tamaño óptico para títulos y cifras. Se sirve desde el mismo sitio. |
 | Vitest, Playwright, axe-core, ESLint | Pruebas de lógica, de punta a punta, de accesibilidad y revisión de código. |
 
 No hay librerías de gráficos, de estado global ni de estilos: los gráficos son SVG propios y los estilos,

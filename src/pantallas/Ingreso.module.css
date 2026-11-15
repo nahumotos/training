@@ -23,7 +23,6 @@
   align-items: center;
   gap: 10px;
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   font-size: 24px;
   letter-spacing: -0.01em;
 }
@@ -38,7 +37,6 @@
 .caja h1 {
   font-size: 34px;
   font-weight: 750;
-  font-stretch: var(--ancho-titulo);
   letter-spacing: -0.02em;
   line-height: 1.05;
 }

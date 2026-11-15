@@ -1,4 +1,5 @@
-import { Disco } from '../../componentes/Disco';
+import { Anillos } from '../../componentes/Anillos';
+import { Cifra } from '../../componentes/Cifra';
 import { estadoKcal, llegaProteina, type TotalesDia } from '../../dominio/comidas';
 import { gramos, litros, num } from '../../dominio/formato';
 import type { Objetivos } from '../../dominio/tipos';
@@ -23,11 +24,19 @@ export function ResumenDia({ totales, agua, objetivos: o }: { totales: TotalesDi
     <section className="tarjeta" aria-label="Resumen del día">
       <div className={estilos.metricas}>
         <div className={estilos.proteina}>
-          <Disco valor={totales.p} objetivo={o.proteina.obj} banda={o.proteina} ok={okP} tam={132}>
-            <b className={`grabado ${estilos.cifraDisco}`}>{num(totales.p)}</b>{' '}
+          <Anillos
+            tam={140}
+            anillos={[
+              { tono: 'proteina', valor: totales.p, objetivo: o.proteina.obj, marca: o.proteina.min, ok: okP },
+              { tono: 'kcal', valor: totales.k, objetivo: o.kcal.min, ok: k.tipo === 'rango', exceso: k.tipo === 'arriba' },
+            ]}
+          >
+            <b className={`grabado ${estilos.cifraDisco}`}>
+              <Cifra valor={totales.p} />
+            </b>{' '}
             <span className={estilos.deDisco}>de {o.proteina.obj} g</span>
             <span className="solo-lector"> de proteína.</span>
-          </Disco>
+          </Anillos>
           <p className={okP ? `${estilos.estadoMetrica} ${estilos.ok}` : estilos.estadoMetrica}>
             {okP ? 'Llegaste al objetivo de proteína' : `Te faltan ${num(o.proteina.obj - totales.p)} g de proteína`}
           </p>
@@ -36,7 +45,9 @@ export function ResumenDia({ totales, agua, objetivos: o }: { totales: TotalesDi
           <div className={estilos.metrica}>
             <span className="rotulo">Calorías</span>
             <p className={estilos.cifra}>
-              <b className="grabado">{num(totales.k)}</b>{' '}
+              <b className="grabado">
+                <Cifra valor={totales.k} />
+              </b>{' '}
               <span>
                 de {num(o.kcal.min)}–{num(o.kcal.max)} kcal
               </span>

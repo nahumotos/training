@@ -10,6 +10,7 @@ import type { Exportacion, Objetivos, Perfil } from '../dominio/tipos';
 import { useAvisos } from '../estado/Avisos';
 import { useDatos, useSesion } from '../estado/Proveedor';
 import { useTitulo } from '../estado/hooks';
+import { elegirTema, useTema, type PreferenciaTema } from '../estado/tema';
 import estilos from './Ajustes.module.css';
 
 type FormObjetivos = Record<'pObj' | 'pMin' | 'pMax' | 'kMin' | 'kMax' | 'cMin' | 'cMax' | 'gMin' | 'gMax' | 'agua' | 'umbral', string>;
@@ -62,13 +63,14 @@ export default function Ajustes() {
       ) : (
         <Cargando enLinea />
       )}
+      <Apariencia />
       <Datos />
       <Instalar />
       <section className="tarjeta" aria-labelledby="aj-cuenta">
         <h2 id="aj-cuenta" className="titulo-seccion con-icono">
-        <Icono nombre="ajustes" tam={20} />
-        Cuenta
-      </h2>
+          <Icono nombre="ajustes" tam={20} />
+          Cuenta
+        </h2>
         <p>
           Ingresaste como <b>{usuario.email}</b>
           {servicios.modo === 'demo' && ' (modo demo: los datos quedan solo en este navegador)'}.
@@ -82,18 +84,46 @@ export default function Ajustes() {
       </section>
       <section className="tarjeta" aria-labelledby="aj-acerca">
         <h2 id="aj-acerca" className="titulo-seccion con-icono">
-        <Icono nombre="libro" tam={20} />
-        Acerca de
-      </h2>
+          <Icono nombre="libro" tam={20} />
+          Acerca de
+        </h2>
         <p className="tenue">
           {NOMBRE_APP} {VERSION}. Fotos de los ejercicios:{' '}
           <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener noreferrer">
             Free Exercise DB
           </a>
-          , de dominio público. Fuentes Barlow y Barlow Condensed (SIL Open Font License).
+          , de dominio público. Tipografía Inter (SIL Open Font License).
         </p>
       </section>
     </div>
+  );
+}
+
+const OPCIONES_TEMA: { valor: PreferenciaTema; texto: string }[] = [
+  { valor: 'auto', texto: 'Automático' },
+  { valor: 'claro', texto: 'Claro' },
+  { valor: 'oscuro', texto: 'Oscuro' },
+];
+
+/** Claro, oscuro o como el sistema. Se guarda en este dispositivo, no en la cuenta. */
+function Apariencia() {
+  const { preferencia } = useTema();
+  return (
+    <section className="tarjeta" aria-labelledby="aj-apariencia">
+      <h2 id="aj-apariencia" className="titulo-seccion con-icono">
+        <Icono nombre="luna" tam={20} />
+        Apariencia
+      </h2>
+      <div className={estilos.segmentos} role="radiogroup" aria-labelledby="aj-apariencia">
+        {OPCIONES_TEMA.map((o) => (
+          <label key={o.valor} className={estilos.segmento}>
+            <input type="radio" name="tema" value={o.valor} checked={preferencia === o.valor} onChange={() => elegirTema(o.valor)} />
+            <span>{o.texto}</span>
+          </label>
+        ))}
+      </div>
+      <p className="ayuda">Automático sigue el modo claro u oscuro del teléfono o la computadora. Lo que elijas queda guardado en este dispositivo.</p>
+    </section>
   );
 }
 

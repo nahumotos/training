@@ -39,7 +39,6 @@
 .fecha h1 {
   font-size: 24px;
   font-weight: 750;
-  font-stretch: var(--ancho-titulo);
   letter-spacing: -0.015em;
   overflow-wrap: anywhere;
 }
@@ -297,7 +296,6 @@
 .totalComida b {
   color: var(--tinta);
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   font-size: 17px;
 }
 
@@ -330,8 +328,14 @@
   min-height: 56px;
 }
 
+.item:active {
+  background: var(--tinte);
+  box-shadow: 0 0 0 6px var(--tinte);
+  border-radius: 4px;
+}
+
 .item[aria-expanded='true'] .nombreItem {
-  color: var(--acento);
+  color: var(--acento-texto);
 }
 
 .nombreItem {
@@ -423,7 +427,8 @@
   margin-top: 1px;
 }
 
-.copiarAyer:hover {
+.copiarAyer:hover,
+.copiarAyer:active {
   background: color-mix(in srgb, var(--azul-suave) 80%, var(--azul));
 }
 
@@ -457,6 +462,8 @@
 }
 
 .agregar:active {
+  background: var(--tinte-fuerte);
+  border-color: transparent;
   transform: scale(0.99);
 }
 
@@ -526,14 +533,13 @@
   border: 0;
   background: none;
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   font-size: 17px;
   cursor: pointer;
 }
 
 .segmentos button[aria-pressed='true'] {
   background: var(--superficie);
-  color: var(--acento);
+  color: var(--acento-texto);
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
 }
 

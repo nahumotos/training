@@ -29,7 +29,7 @@ h3 {
   margin: 0;
   font-weight: 700;
   line-height: 1.15;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
@@ -78,12 +78,11 @@ textarea {
   font-variant-numeric: tabular-nums;
 }
 
-/* Cifras «grabadas», como los números de un disco. */
+/* Cifras destacadas: gruesas, con números de ancho parejo para que no bailen al cambiar. */
 .grabado {
-  font-stretch: var(--ancho-grabado);
-  font-weight: 800;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   line-height: 1;
 }
 
@@ -102,8 +101,9 @@ textarea {
 }
 
 .titulo-seccion {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .titulo-seccion.con-icono {
@@ -126,8 +126,7 @@ textarea {
 .tarjeta {
   background: var(--superficie);
   border-radius: var(--radio-panel);
-  box-shadow: var(--filete);
-  padding: var(--e-5);
+  padding: var(--e-4);
   display: flex;
   flex-direction: column;
   gap: var(--e-4);
@@ -248,7 +247,6 @@ textarea {
 .esqueleto {
   border-radius: var(--radio-panel);
   background: var(--superficie);
-  box-shadow: var(--filete);
   min-height: 120px;
   animation: latir 1.2s ease-in-out infinite alternate;
 }
@@ -271,12 +269,13 @@ textarea {
   gap: 8px;
   min-height: 48px;
   padding: 11px 18px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 0;
   background: var(--tinte);
   color: var(--tinta);
   font-weight: 600;
   font-size: 16px;
+  letter-spacing: -0.01em;
   line-height: 1.2;
   text-decoration: none;
   text-align: center;
@@ -305,13 +304,13 @@ textarea {
 }
 
 .boton.primario:hover {
-  background: color-mix(in srgb, var(--acento) 88%, var(--tinta));
+  background: color-mix(in srgb, var(--acento) 90%, black);
 }
 
 .boton.chico {
   min-height: 40px;
   padding: 8px 14px;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 15px;
 }
 
@@ -328,7 +327,7 @@ textarea {
   background: none;
   border: 0;
   padding: 0;
-  color: var(--acento);
+  color: var(--acento-texto);
   font: inherit;
   font-weight: 600;
   text-align: left;
@@ -350,9 +349,9 @@ textarea {
   margin-right: -6px;
   padding: 0 4px 0 8px;
   border-radius: 999px;
-  color: var(--acento);
+  color: var(--acento-texto);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
   transition: background-color var(--rapido) ease;
 }
@@ -432,7 +431,7 @@ textarea.entrada {
 
 .error {
   font-size: 14px;
-  color: var(--acento);
+  color: var(--acento-texto);
   font-weight: 600;
 }
 
@@ -471,6 +470,69 @@ textarea.entrada {
   gap: 8px;
 }
 
+/* ---------- Respuesta al tocar ---------- */
+
+.enlace-mas:active {
+  background: var(--acento-suave);
+}
+
+/* ---------- Deslizamiento entre pantallas (entrar y salir de un día de la rutina) ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-paso]::view-transition-old(root),
+  :root[data-paso]::view-transition-new(root) {
+    animation-duration: 0.34s;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  :root[data-paso='adelante']::view-transition-old(root) {
+    animation-name: irse-izquierda;
+  }
+
+  :root[data-paso='adelante']::view-transition-new(root),
+  :root[data-paso='atras']::view-transition-old(root) {
+    box-shadow: -10px 0 30px rgb(0 0 0 / 0.12);
+  }
+
+  :root[data-paso='adelante']::view-transition-new(root) {
+    animation-name: venir-derecha;
+  }
+
+  :root[data-paso='atras']::view-transition-old(root) {
+    animation-name: irse-derecha;
+  }
+
+  :root[data-paso='atras']::view-transition-new(root) {
+    animation-name: venir-izquierda;
+  }
+}
+
+@keyframes irse-izquierda {
+  to {
+    transform: translateX(-28%);
+    opacity: 0.6;
+  }
+}
+
+@keyframes venir-derecha {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes irse-derecha {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes venir-izquierda {
+  from {
+    transform: translateX(-28%);
+    opacity: 0.6;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -491,15 +553,14 @@ textarea.entrada {
 }
 
 .cabecera h1 {
-  font-size: 32px;
-  font-stretch: var(--ancho-titulo);
-  font-weight: 750;
-  letter-spacing: -0.02em;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   line-height: 1.08;
 }
 
 .cabecera h1 .acento {
-  color: var(--acento);
+  color: var(--acento-texto);
 }
 
 .cabecera .sub {
@@ -523,8 +584,9 @@ textarea.entrada {
 }
 
 .fila-titulo h2 {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .fila-titulo .tenue {
@@ -555,7 +617,12 @@ textarea.entrada {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 3px solid var(--acento);
+  border: 3px solid var(--rosa);
+}
+
+/* Cerrado, el desplegable mide lo que su título (sin el espacio del contenido oculto). */
+details.tarjeta:not([open]) {
+  gap: 0;
 }
 
 .desplegable > summary {

@@ -1,4 +1,5 @@
-/* Celular: barra superior liviana y pestañas flotantes abajo. Desde 960 px: riel lateral. */
+/* Celular: barra superior translúcida y barra de pestañas abajo, como en el iPhone.
+   Desde 960 px: barra lateral. */
 
 .marco {
   min-height: 100dvh;
@@ -26,34 +27,35 @@
   z-index: 40;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-height: 56px;
+  /* Queda quieta mientras el contenido se desliza entre pantallas. */
+  view-transition-name: barra-superior;
   padding-top: env(safe-area-inset-top, 0px);
   padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(8px, env(safe-area-inset-right, 0px));
+  padding-right: max(12px, env(safe-area-inset-right, 0px));
   background: color-mix(in srgb, var(--fondo) 94%, transparent);
-  backdrop-filter: saturate(1.6) blur(16px);
-  -webkit-backdrop-filter: saturate(1.6) blur(16px);
+  backdrop-filter: saturate(1.8) blur(20px);
+  -webkit-backdrop-filter: saturate(1.8) blur(20px);
 }
 
 .marca {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font-weight: 800;
-  font-stretch: var(--ancho-grabado);
+  gap: 8px;
+  font-weight: 700;
   font-size: 19px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   text-decoration: none;
   margin-right: auto;
 }
 
-/* El disco: aro de color con el agujero del centro. */
+/* El logo: un anillo, como los de la app. */
 .disco {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--fondo) 0 3px, var(--acento) 3.5px 7px, color-mix(in srgb, var(--acento) 78%, black) 7.5px 8.5px, var(--acento) 9px);
+  border: 6px solid var(--rosa);
 }
 
 .estado {
@@ -72,48 +74,61 @@
   text-overflow: ellipsis;
 }
 
-.ajustes {
-  width: 44px;
-  height: 44px;
+.herramientas {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+/* Botones redondos de la barra: tema y ajustes. */
+.icono {
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
+  border: 0;
+  padding: 0;
   border-radius: 999px;
-  color: var(--tenue);
+  background: var(--superficie);
+  color: var(--tinta);
   text-decoration: none;
+  cursor: pointer;
   flex: none;
   transition: background-color var(--rapido) ease;
 }
 
-.ajustes:hover {
-  background: var(--tinte);
+.icono svg {
+  width: 21px;
+  height: 21px;
 }
 
-.ajustes:global(.active) {
-  color: var(--acento);
+.icono:hover,
+.icono:active {
+  background: color-mix(in srgb, var(--superficie) 92%, var(--tinta));
 }
 
-.textoAjustes {
+.icono:global(.active) {
+  color: var(--acento-texto);
+}
+
+.textoRiel {
   display: none;
 }
 
-/* Pestañas: una barra flotante y translúcida. */
+/* Pestañas: barra pegada abajo, translúcida, con el ícono arriba y el nombre abajo. */
 .nav {
   position: fixed;
-  left: max(12px, env(safe-area-inset-left, 0px));
-  right: max(12px, env(safe-area-inset-right, 0px));
-  bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 45;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  height: 64px;
-  padding: 6px;
-  margin-inline: auto;
-  max-width: 520px;
-  border-radius: 999px;
+  height: calc(var(--alto-nav) + env(safe-area-inset-bottom, 0px));
+  view-transition-name: pestanas;
+  padding: 4px max(4px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(4px, env(safe-area-inset-left, 0px));
   background: var(--vidrio);
-  box-shadow:
-    inset 0 0 0 1px var(--vidrio-borde),
-    var(--sombra-flotante);
+  box-shadow: inset 0 0.5px 0 var(--vidrio-borde);
   backdrop-filter: saturate(1.8) blur(20px);
   -webkit-backdrop-filter: saturate(1.8) blur(20px);
 }
@@ -123,34 +138,42 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
-  border-radius: 999px;
+  gap: 2px;
+  border-radius: 12px;
   color: var(--tenue);
   text-decoration: none;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 11px;
+  letter-spacing: 0.01em;
   min-width: 0;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: color var(--rapido) ease;
 }
 
 .enlace svg {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
+  transition: transform 0.15s ease;
+}
+
+/* Al tocar una pestaña, el ícono se hunde un instante. */
+.enlace:active svg {
+  transform: scale(0.86);
 }
 
 .enlace:global(.active) {
   color: var(--acento-texto);
-  background: var(--acento-suave);
+}
+
+.enlace:global(.active) svg {
+  color: var(--rosa);
 }
 
 .principal {
   width: 100%;
   max-width: var(--ancho-amplio);
   margin-inline: auto;
-  padding-top: 8px;
-  padding-bottom: calc(var(--alto-nav) + var(--alto-temporizador) + 40px + env(safe-area-inset-bottom, 0px));
+  padding-top: 4px;
+  padding-bottom: calc(var(--alto-nav) + var(--alto-temporizador) + 32px + env(safe-area-inset-bottom, 0px));
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   outline: none;
@@ -166,9 +189,9 @@
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
-    padding: 28px 16px 16px;
+    padding: 28px 14px 16px;
     background: var(--superficie);
-    box-shadow: 1px 0 0 var(--linea);
+    box-shadow: 0.5px 0 0 var(--linea);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -184,43 +207,50 @@
     order: 3;
   }
 
-  .ajustes {
-    order: 2;
+  .herramientas {
     position: absolute;
-    left: 16px;
-    right: 16px;
+    left: 14px;
+    right: 14px;
     bottom: 16px;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .icono {
     width: auto;
-    height: 46px;
+    height: 44px;
     display: flex;
     justify-content: flex-start;
     gap: 12px;
-    padding-inline: 14px;
-    border-radius: 14px;
-    font-weight: 600;
+    padding-inline: 12px;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 500;
   }
 
-  .ajustes:global(.active) {
-    color: var(--acento-texto);
+  .icono:hover {
+    background: var(--tinte);
+  }
+
+  .icono:global(.active) {
     background: var(--acento-suave);
   }
 
-  .textoAjustes {
+  .textoRiel {
     display: inline;
   }
 
   .nav {
     left: 0;
     right: auto;
-    top: 88px;
+    top: 86px;
     bottom: auto;
     width: var(--ancho-riel);
-    max-width: none;
     height: auto;
     grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 0 16px;
-    border-radius: 0;
+    gap: 2px;
+    padding: 0 14px;
     background: transparent;
     box-shadow: none;
     backdrop-filter: none;
@@ -231,14 +261,33 @@
     flex-direction: row;
     justify-content: flex-start;
     gap: 12px;
-    height: 46px;
-    padding-inline: 14px;
-    border-radius: 14px;
-    font-size: 16px;
+    height: 44px;
+    padding-inline: 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--tinta);
+  }
+
+  .enlace svg {
+    width: 22px;
+    height: 22px;
+    color: var(--tenue);
+  }
+
+  .enlace:hover {
+    background: var(--tinte);
+  }
+
+  .enlace:global(.active) {
+    background: var(--acento-suave);
+    color: var(--acento-texto);
+    font-weight: 600;
   }
 
   .principal {
-    /* Centrado en el espacio que deja el riel, sin pasarse del ancho de la ventana. */
+    /* Centrado en el espacio que deja la barra lateral, sin pasarse del ancho de la ventana. */
     max-width: min(var(--ancho-amplio), calc(100vw - var(--ancho-riel) - 64px));
     margin-left: calc(var(--ancho-riel) + max(32px, (100vw - var(--ancho-riel) - var(--ancho-amplio)) / 2));
     margin-right: auto;

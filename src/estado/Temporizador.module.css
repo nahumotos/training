@@ -11,8 +11,9 @@
   position: fixed;
   left: max(12px, env(safe-area-inset-left, 0px));
   right: max(12px, env(safe-area-inset-right, 0px));
-  bottom: calc(max(10px, env(safe-area-inset-bottom, 0px)) + 64px + 8px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--alto-nav) + 8px);
   z-index: 50;
+  view-transition-name: descanso;
   max-width: 520px;
   margin-inline: auto;
   min-height: 68px;
@@ -20,7 +21,7 @@
   align-items: center;
   gap: 12px;
   padding: 8px 8px 8px 10px;
-  border-radius: 22px;
+  border-radius: 18px;
   background: var(--tinta);
   color: var(--fondo);
   box-shadow: var(--sombra-flotante);
@@ -36,21 +37,42 @@
 }
 
 .barra[data-termino] {
-  background: var(--bien);
+  /* Verde oscuro en los dos temas: el texto blanco se lee igual de bien. */
+  background: #1a7a38;
   color: #fff;
   justify-content: center;
+  animation: latir-fin 0.6s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+/* Terminó el descanso: la barra late una vez. */
+@keyframes latir-fin {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Registrada como número para que el anillo se vacíe de forma continua entre segundo y segundo. */
+@property --resto {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 1;
 }
 
 .progreso {
-  --p: 1;
   flex: none;
   width: 48px;
   height: 48px;
   border-radius: 50%;
   background:
-    radial-gradient(circle, var(--tinta) 0 13px, transparent 13.5px),
-    conic-gradient(var(--acento) calc(var(--p) * 360deg), color-mix(in srgb, var(--fondo) 22%, transparent) 0);
-  transition: background 0.25s linear;
+    radial-gradient(circle, var(--tinta) 0 15px, transparent 15.5px),
+    conic-gradient(var(--rosa) calc(var(--resto) * 360deg), color-mix(in srgb, var(--fondo) 22%, transparent) 0);
+  transition: --resto 1s linear;
 }
 
 .info {
@@ -72,7 +94,6 @@
 
 .tiempo {
   font-weight: 800;
-  font-stretch: var(--ancho-grabado);
   font-size: 28px;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -80,7 +101,6 @@
 
 .listo {
   font-weight: 750;
-  font-stretch: var(--ancho-titulo);
   font-size: 20px;
 }
 

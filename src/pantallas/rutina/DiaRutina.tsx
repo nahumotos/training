@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { EnlaceDeslizante } from '../../app/EnlaceDeslizante';
 import { MiniaturaAnimacion, PanelAnimacion, SinAnimacion } from '../../componentes/Animacion';
 import { Icono } from '../../componentes/Icono';
 import { DIAS_HISTORIAL } from '../../config';
@@ -111,10 +112,10 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
 
   return (
     <div className="pila pantalla">
-      <Link to="/rutina" className={estilos.volver}>
+      <EnlaceDeslizante to="/rutina" paso="atras" className={estilos.volver}>
         <Icono nombre="izquierda" tam={16} />
         Mi rutina
-      </Link>
+      </EnlaceDeslizante>
       <header className="cabecera">
         <p className="ceja">{dia.dia}</p>
         <h1>
