@@ -64,6 +64,7 @@ test('exportar e importar una copia de los datos', async ({ page, browser }, inf
   await page.getByRole('dialog').getByRole('button', { name: 'Listo' }).click();
   await page.goto('/rutina/torso-a');
   const banca = page.getByRole('article', { name: /Press de banca con barra/ });
+  await banca.getByRole('textbox', { name: 'Peso de la serie 1, en kg por lado' }).fill('5');
   await banca.getByRole('textbox', { name: /^Repeticiones de la serie 1/ }).fill('10');
   await banca.getByRole('button', { name: 'Marcar la serie 1 como hecha' }).click();
   await expect(banca.getByRole('button', { name: /Serie 1 hecha/ })).toBeVisible();
@@ -126,6 +127,7 @@ test('progreso: resumen de la semana, gráficos y copiar para la revisión', asy
   await resto.getByLabel('Peso (kg)').blur();
   await page.goto('/rutina/torso-a');
   const banca = page.getByRole('article', { name: /Press de banca con barra/ });
+  await banca.getByRole('textbox', { name: 'Peso de la serie 1, en kg por lado' }).fill('5');
   await banca.getByRole('textbox', { name: /^Repeticiones de la serie 1/ }).fill('9');
   await banca.getByRole('button', { name: 'Marcar la serie 1 como hecha' }).click();
   await expect(banca.getByRole('button', { name: /Serie 1 hecha/ })).toBeVisible();

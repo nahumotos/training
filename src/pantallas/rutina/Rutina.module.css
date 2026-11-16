@@ -416,10 +416,18 @@
   font-weight: 500;
 }
 
-.sugerido {
-  font-weight: 500;
-  font-size: 13px;
-  margin-right: 6px;
+/* Sin peso anotado: bloque neutro, sin el amarillo de las notas. */
+.nota[data-vacia] {
+  background: var(--superficie-2);
+  color: var(--tenue);
+}
+
+.sinPeso {
+  font-size: 15px;
+}
+
+.nota[data-vacia] .botonNota {
+  color: var(--acento-texto);
 }
 
 .notaLibre {
@@ -647,4 +655,32 @@
 
 .acciones > * {
   flex: 1;
+}
+
+/* ---------- Cierre del día: terminar o reiniciar ---------- */
+
+.cierre {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-2);
+}
+
+.confirmarReinicio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-3);
+  padding: var(--e-4);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  font-size: 15px;
+}
+
+.botonesReinicio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+
+.botonesReinicio > * {
+  flex: 1 1 140px;
 }

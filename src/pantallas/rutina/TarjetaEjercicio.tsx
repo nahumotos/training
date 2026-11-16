@@ -176,7 +176,7 @@ export function TarjetaEjercicio({
           }}
         />
       ) : (
-        <div className={estilos.nota}>
+        <div className={estilos.nota} data-vacia={(pesoNota === null || !conPeso) && !nota?.nota ? true : undefined}>
           <Icono nombre="lapiz" tam={18} />
           <div className={estilos.textoNota}>
             {pesoNota !== null && conPeso ? (
@@ -185,16 +185,12 @@ export function TarjetaEjercicio({
                 {total !== null && <span className={estilos.total}> · total {num(total, 2)} kg</span>}
               </span>
             ) : (
-              <span>
-                <span className={estilos.sugerido}>Sugerido</span>
-                <span className="solo-lector">: </span>
-                <span className={estilos.peso}>{ex.sug}</span>
-              </span>
+              (conPeso || !nota?.nota) && <span className={estilos.sinPeso}>{conPeso ? 'Sin peso de trabajo anotado' : 'Sin nota'}</span>
             )}
             {nota?.nota && <span className={estilos.notaLibre}>{nota.nota}</span>}
           </div>
           <button type="button" className={estilos.botonNota} onClick={() => setEditandoNota(true)}>
-            Editar
+            {pesoNota === null && conPeso && !nota?.nota ? 'Anotar' : 'Editar'}
           </button>
         </div>
       )}

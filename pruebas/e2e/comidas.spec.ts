@@ -243,6 +243,14 @@ test('el resto del día: agua, pasos, horarios, energía, peso y nota se guardan
   await expect(resto.getByLabel('Pasos')).toHaveValue('8500');
   await expect(resto.getByLabel('Te acostaste')).toHaveValue('23:30');
   await expect(resto.getByLabel('Te levantaste')).toHaveValue('07:15');
+
+  // Una hora cargada sin querer se borra y el campo queda vacío, como antes de tocarlo.
+  await resto.getByRole('button', { name: 'Borrar hora de levantarte' }).click();
+  await expect(resto.getByLabel('Te levantaste')).toHaveValue('');
+  await expect(resto.getByRole('button', { name: 'Borrar hora de levantarte' })).toHaveCount(0);
+  await page.reload();
+  await expect(resto.getByLabel('Te levantaste')).toHaveValue('');
+  await expect(resto.getByLabel('Te acostaste')).toHaveValue('23:30');
   await expect(resto.getByRole('button', { name: 'Energía 4 de 5' })).toHaveAttribute('aria-pressed', 'true');
   await expect(resto.getByLabel('Peso (kg)')).toHaveValue('78,4');
   await expect(resto.getByLabel('Molestias')).toHaveValue('hombro derecho, 2 de 10');

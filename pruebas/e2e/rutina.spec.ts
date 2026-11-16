@@ -111,7 +111,11 @@ test('la semana siguiente propone el peso de la última vez y sugiere progresar'
 test('editar el peso de trabajo y la nota de un ejercicio', async ({ page }) => {
   await page.goto('/rutina/torso-a');
   const ej = banca(page);
-  await ej.getByRole('button', { name: 'Editar' }).click();
+  // Sin peso anotado no se propone ninguno.
+  await expect(ej.getByText('Sin peso de trabajo anotado')).toBeVisible();
+  await expect(ej.getByText(/Sugerido/)).toHaveCount(0);
+  await expect(ej.getByRole('textbox', { name: 'Peso de la serie 1, en kg por lado' })).toHaveValue('');
+  await ej.getByRole('button', { name: 'Anotar' }).click();
   await ej.getByLabel(/Peso de trabajo/).fill('diez');
   await ej.getByRole('button', { name: 'Guardar' }).click();
   await expect(ej.getByRole('alert')).toContainText('Escribí el peso con números');
@@ -146,4 +150,33 @@ test('la entrada en calor se abre y recuerda el estado', async ({ page }) => {
   await expect(calor).toHaveAttribute('open', '');
   await page.reload();
   await expect(calor).toHaveAttribute('open', '');
+});
+
+test('reiniciar el día borra las series marcadas hoy y se puede deshacer', async ({ page }) => {
+  await page.goto('/rutina/torso-a');
+  const ej = banca(page);
+  await ej.getByRole('textbox', { name: 'Peso de la serie 1, en kg por lado' }).fill('7,5');
+  await ej.getByRole('textbox', { name: /^Repeticiones de la serie 1/ }).fill('10');
+  await ej.getByRole('button', { name: 'Marcar la serie 1 como hecha' }).click();
+  await expect(ej.getByRole('button', { name: /Serie 1 hecha/ })).toHaveAttribute('aria-pressed', 'true');
+
+  // Pide confirmación antes de borrar.
+  await page.getByRole('button', { name: 'Reiniciar el día' }).click();
+  const confirmar = page.getByRole('group', { name: 'Reiniciar el día' });
+  await expect(confirmar).toContainText('Se borra la serie que marcaste hoy en Torso A');
+  await accesible(page);
+  await confirmar.getByRole('button', { name: 'Borrar las series' }).click();
+  await expect(ej.getByRole('button', { name: 'Marcar la serie 1 como hecha' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('timer')).toHaveCount(0);
+
+  // Deshacer vuelve a dejar la serie marcada.
+  await page.getByRole('status').getByRole('button', { name: 'Deshacer' }).click();
+  await expect(ej.getByRole('button', { name: /Serie 1 hecha/ })).toHaveAttribute('aria-pressed', 'true');
+
+  // Borrado de verdad: ya no cuenta como entrenamiento de la semana.
+  await page.getByRole('button', { name: 'Reiniciar el día' }).click();
+  await page.getByRole('group', { name: 'Reiniciar el día' }).getByRole('button', { name: 'Borrar las series' }).click();
+  await expect(page.getByRole('button', { name: 'Reiniciar el día' })).toHaveCount(0);
+  await page.goto('/');
+  await expect(page.getByRole('listitem').filter({ hasText: /^\d+\/\d+ entrenamientos$/ })).toHaveText('0/4 entrenamientos');
 });

@@ -139,10 +139,11 @@ export interface ValorInicialSerie {
 
 /**
  * Valores con los que arranca cada fila de series: el peso de la última vez
- * (o el de la nota, o el sugerido) y las repeticiones previas como referencia.
+ * (o el anotado como peso de trabajo; si no hay ninguno, vacío) y las repeticiones previas
+ * como referencia.
  */
 export function valoresIniciales(ex: Ejercicio, ultima: UltimaVez | null, nota: NotaEjercicio | undefined): ValorInicialSerie[] {
-  const base = ultima?.series.at(-1)?.peso ?? nota?.peso ?? ex.sugKg;
+  const base = ultima?.series.at(-1)?.peso ?? nota?.peso;
   return Array.from({ length: ex.s }, (_, i) => {
     const previa = ultima?.series[i];
     return {

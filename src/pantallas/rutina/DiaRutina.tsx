@@ -62,6 +62,9 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
   const listo = notasCargadas && sesionesCargadas;
   const [calorAbierto, setCalorAbierto] = useState(leerCalorAbierto);
   const [animacionAbierta, setAnimacionAbierta] = useState<string | null>(null);
+  const [confirmarReinicio, setConfirmarReinicio] = useState(false);
+  // Cambia al reiniciar el día: las tarjetas de ejercicio arrancan de cero.
+  const [ronda, setRonda] = useState(0);
 
   const id = idSesion(hoy, dia.id);
   const sesion = useMemo(() => sesiones.find((s) => s.id === id) ?? null, [sesiones, id]);
@@ -100,6 +103,19 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
   const guardarNota = (ex: Ejercicio, n: NotaEjercicio) => {
     void almacen.guardarNota(ex.id, n).catch(() => undefined);
     avisar('Nota guardada');
+  };
+
+  /** Borra las series marcadas hoy en este día (por si se cargó o se terminó sin querer). */
+  const reiniciar = () => {
+    if (!sesion) return;
+    const copia = sesion;
+    void almacen.borrarSesion(sesion.id).catch(() => undefined);
+    temporizador.detener();
+    setConfirmarReinicio(false);
+    setRonda((r) => r + 1);
+    avisar('Borraste las series de hoy', {
+      accion: { texto: 'Deshacer', hacer: () => void almacen.guardarSesion(copia).then(() => setRonda((r) => r + 1)).catch(() => undefined) },
+    });
   };
 
   const terminar = () => {
@@ -185,7 +201,7 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
 
       {listo ? (
         <>
-          <div className={estilos.lista}>
+          <div className={estilos.lista} key={ronda}>
             {bloques(dia).map((b) =>
               b.ejercicios.length > 1 ? (
                 <section key={b.etiquetas.join('')} className={estilos.superserie} aria-label={`Superserie ${b.etiquetas.join(' y ')}`}>
@@ -221,9 +237,31 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
           </div>
 
           {hechas > 0 && (
-            <button type="button" className="boton primario ancho" onClick={terminar}>
-              {sesion?.fin ? 'Volver a la rutina' : 'Terminar entrenamiento'}
-            </button>
+            <div className={estilos.cierre}>
+              <button type="button" className="boton primario ancho" onClick={terminar}>
+                {sesion?.fin ? 'Volver a la rutina' : 'Terminar entrenamiento'}
+              </button>
+              {confirmarReinicio ? (
+                <div className={estilos.confirmarReinicio} role="group" aria-label="Reiniciar el día">
+                  <p>
+                    {hechas === 1 ? 'Se borra la serie' : `Se borran las ${hechas} series`} que marcaste hoy en {dia.nombre} y el día deja de contar como
+                    entrenamiento hecho.
+                  </p>
+                  <div className={estilos.botonesReinicio}>
+                    <button type="button" className="boton peligro" onClick={reiniciar}>
+                      Borrar las series
+                    </button>
+                    <button type="button" className="boton" onClick={() => setConfirmarReinicio(false)}>
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button type="button" className="boton ancho" onClick={() => setConfirmarReinicio(true)}>
+                  Reiniciar el día
+                </button>
+              )}
+            </div>
           )}
           <p className={estilos.credito}>
             Fotos de los ejercicios: <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener noreferrer">Free Exercise DB</a>, de dominio

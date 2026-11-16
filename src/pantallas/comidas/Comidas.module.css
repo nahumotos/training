@@ -854,3 +854,31 @@ input:focus-visible + .zonaFoto {
   place-items: center;
   cursor: pointer;
 }
+
+/* Rótulo de un campo con una acción a la derecha (por ejemplo, «Borrar» la hora). */
+.filaEtiqueta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 21px;
+}
+
+.filaEtiqueta label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tenue);
+}
+
+.borrarHora {
+  margin: -8px -6px -8px 0;
+  min-height: 36px;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: var(--acento-texto);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

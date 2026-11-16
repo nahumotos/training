@@ -76,6 +76,23 @@ function useCampo(dia: Dia, campo: CampoTexto, cambiar: (f: (d: Dia) => Dia) => 
   };
 }
 
+/** Hora opcional, con un botón para borrarla y dejar el campo vacío como antes de tocarlo. */
+function CampoHora({ id, etiqueta, textoBorrar, valor, alCambiar }: { id: string; etiqueta: string; textoBorrar: string; valor: string; alCambiar: (v: string) => void }) {
+  return (
+    <div className="campo">
+      <div className={estilos.filaEtiqueta}>
+        <label htmlFor={id}>{etiqueta}</label>
+        {valor && (
+          <button type="button" className={estilos.borrarHora} onClick={() => alCambiar('')} aria-label={textoBorrar}>
+            Borrar
+          </button>
+        )}
+      </div>
+      <input id={id} className="entrada" type="time" value={valor} onChange={(e) => alCambiar(e.target.value)} />
+    </div>
+  );
+}
+
 export function RestoDelDia({ dia, objetivoAgua, cambiar }: { dia: Dia; objetivoAgua: number; cambiar: (f: (d: Dia) => Dia) => void }) {
   const id = useId();
   const pasos = useCampo(dia, 'pasos', cambiar);
@@ -120,16 +137,10 @@ export function RestoDelDia({ dia, objetivoAgua, cambiar }: { dia: Dia; objetivo
       <div className="grilla-campos">
         <div className="campo">
           <label htmlFor={`${id}-pasos`}>Pasos</label>
-          <input id={`${id}-pasos`} className="entrada" inputMode="numeric" autoComplete="off" placeholder="App Salud" {...pasos.props} />
+          <input id={`${id}-pasos`} className="entrada" inputMode="numeric" autoComplete="off" placeholder="Ej.: 8.000" {...pasos.props} />
         </div>
-        <div className="campo">
-          <label htmlFor={`${id}-acosto`}>Te acostaste</label>
-          <input id={`${id}-acosto`} className="entrada" type="time" value={dia.acosto} onChange={(e) => hora('acosto', e.target.value)} />
-        </div>
-        <div className="campo">
-          <label htmlFor={`${id}-levanto`}>Te levantaste</label>
-          <input id={`${id}-levanto`} className="entrada" type="time" value={dia.levanto} onChange={(e) => hora('levanto', e.target.value)} />
-        </div>
+        <CampoHora id={`${id}-acosto`} etiqueta="Te acostaste" textoBorrar="Borrar hora de acostarte" valor={dia.acosto} alCambiar={(v) => hora('acosto', v)} />
+        <CampoHora id={`${id}-levanto`} etiqueta="Te levantaste" textoBorrar="Borrar hora de levantarte" valor={dia.levanto} alCambiar={(v) => hora('levanto', v)} />
       </div>
 
       <fieldset className={estilos.energia}>

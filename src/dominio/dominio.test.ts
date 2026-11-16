@@ -220,7 +220,8 @@ describe('rutina', () => {
       { peso: 5, repsPrevias: 9 },
       { peso: 5, repsPrevias: null },
     ]);
-    expect(valoresIniciales(banca, null, undefined)[0]).toEqual({ peso: 5, repsPrevias: null });
+    // Sin una vez anterior ni peso anotado, el peso arranca vacío (no se propone el del plan).
+    expect(valoresIniciales(banca, null, undefined)[0]).toEqual({ peso: null, repsPrevias: null });
     expect(valoresIniciales(banca, null, { peso: 7.5, nota: '', actualizado: '' })[0]?.peso).toBe(7.5);
   });
 
