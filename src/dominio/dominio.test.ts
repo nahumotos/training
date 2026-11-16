@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { diaVacio, estadoKcal, macrosDe, proporciones, proximaComida, recientes, totalesDia } from './comidas';
 import { diferenciaDias, esFechaIso, fechaLarga, lunesDe, rotuloSemana, sumarDias } from './fechas';
 import { leerNumero, num, reloj } from './formato';
-import { OBJETIVOS_INICIALES, validarObjetivos } from './perfil';
+import { OBJETIVOS_INICIALES, validarObjetivos, validarPerfil } from './perfil';
 import { mejoresSeries, promedioHora, resumenSemana, textoResumen, textoSerie } from './progreso';
 import {
   diasHechosEnSemana,
@@ -107,6 +107,22 @@ describe('comidas', () => {
     expect(p).not.toBeNull();
     expect(p!.p + p!.c + p!.g).toBe(100);
     expect(proporciones({ p: 0, c: 0, g: 0 })).toBeNull();
+  });
+});
+
+describe('perfil', () => {
+  const campos = (nombre: string, inicio: string) => validarPerfil(nombre, inicio, '2026-11-16').map((e) => e.campo);
+
+  it('acepta nombres reales (o ninguno) y rechaza números o textos largos', () => {
+    for (const n of ['', 'Nahu', 'Nahuel Alejo', 'María José', "D'Angelo", 'Ana-Lía']) expect(campos(n, '2026-11-09')).toEqual([]);
+    for (const n of ['21 313123 123', 'Nahu2', '!!', 'a'.repeat(31)]) expect(campos(n, '2026-11-09')).toEqual(['nombre']);
+  });
+
+  it('acepta el inicio de la rutina entre 2020 y dentro de un año', () => {
+    expect(campos('Nahu', '2020-01-01')).toEqual([]);
+    expect(campos('Nahu', '2027-11-16')).toEqual([]);
+    for (const f of ['2019-12-31', '2027-11-17', '9999-12-01', '2026-02-30', '']) expect(campos('Nahu', f)).toEqual(['inicio']);
+    expect(validarPerfil('Nahu', '9999-12-01', '2026-11-16')[0]?.mensaje).toBe('Elegí una fecha entre el 1/1/2020 y el 16/11/2027.');
   });
 });
 

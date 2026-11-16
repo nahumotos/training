@@ -2,14 +2,14 @@ import { useId, useState, type FormEvent } from 'react';
 import { Cargando } from '../app/Estados';
 import { Icono } from '../componentes/Icono';
 import { NOMBRE_APP, VERSION } from '../config';
-import { esFechaIso, fechaLarga, hoyIso } from '../dominio/fechas';
+import { fechaLarga, hoyIso } from '../dominio/fechas';
 import { leerNumero } from '../dominio/formato';
-import { OBJETIVOS_INICIALES, validarObjetivos, type ErrorValidacion } from '../dominio/perfil';
+import { INICIO_MINIMO, inicioMaximo, LARGO_NOMBRE, OBJETIVOS_INICIALES, validarObjetivos, validarPerfil, type ErrorValidacion } from '../dominio/perfil';
 import { ErrorImportacion, sanearExportacion } from '../dominio/saneo';
 import type { Exportacion, Objetivos, Perfil } from '../dominio/tipos';
 import { useAvisos } from '../estado/Avisos';
 import { useDatos, useSesion } from '../estado/Proveedor';
-import { useTitulo } from '../estado/hooks';
+import { useHoy, useTitulo } from '../estado/hooks';
 import { elegirTema, useTema, type PreferenciaTema } from '../estado/tema';
 import estilos from './Ajustes.module.css';
 
@@ -129,19 +129,23 @@ function Apariencia() {
 
 function PerfilYRutina({ perfil, alGuardar }: { perfil: Perfil; alGuardar: (p: Perfil) => void }) {
   const id = useId();
+  const hoy = useHoy();
   const { avisar } = useAvisos();
   const [nombre, setNombre] = useState(perfil.nombre);
   const [inicio, setInicio] = useState(perfil.inicioRutina);
-  const [error, setError] = useState('');
+  const [errores, setErrores] = useState<ErrorValidacion[]>([]);
+  const error = (campo: string) => errores.find((e) => e.campo === campo)?.mensaje;
+  const fechaOk = !validarPerfil('', inicio, hoy).length;
 
   const enviar = (e: FormEvent) => {
     e.preventDefault();
-    if (!esFechaIso(inicio)) {
-      setError('Elegí una fecha válida.');
+    const problemas = validarPerfil(nombre, inicio, hoy);
+    setErrores(problemas);
+    if (problemas.length) {
+      document.getElementById(`${id}-${problemas[0]!.campo}`)?.focus();
       return;
     }
-    setError('');
-    alGuardar({ ...perfil, nombre: nombre.trim().slice(0, 60), inicioRutina: inicio });
+    alGuardar({ ...perfil, nombre: nombre.trim().replace(/\s+/g, ' '), inicioRutina: inicio });
     avisar('Guardado');
   };
 
@@ -154,7 +158,21 @@ function PerfilYRutina({ perfil, alGuardar }: { perfil: Perfil; alGuardar: (p: P
       <div className="grilla-campos">
         <div className="campo">
           <label htmlFor={`${id}-nombre`}>Nombre</label>
-          <input id={`${id}-nombre`} className="entrada" autoComplete="given-name" maxLength={60} value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          <input
+            id={`${id}-nombre`}
+            className="entrada"
+            autoComplete="given-name"
+            maxLength={LARGO_NOMBRE}
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            aria-invalid={Boolean(error('nombre'))}
+            aria-describedby={error('nombre') ? `${id}-nombre-error` : undefined}
+          />
+          {error('nombre') && (
+            <p className="error" id={`${id}-nombre-error`}>
+              {error('nombre')}
+            </p>
+          )}
         </div>
         <div className="campo">
           <label htmlFor={`${id}-inicio`}>Inicio de la rutina</label>
@@ -162,19 +180,26 @@ function PerfilYRutina({ perfil, alGuardar }: { perfil: Perfil; alGuardar: (p: P
             id={`${id}-inicio`}
             className="entrada"
             type="date"
+            min={INICIO_MINIMO}
+            max={inicioMaximo(hoy)}
             value={inicio}
             onChange={(e) => setInicio(e.target.value)}
-            aria-invalid={Boolean(error)}
-            aria-describedby={`${id}-inicio-ayuda`}
+            aria-invalid={Boolean(error('inicio'))}
+            aria-describedby={error('inicio') ? `${id}-inicio-error ${id}-inicio-ayuda` : `${id}-inicio-ayuda`}
           />
+          {error('inicio') && (
+            <p className="error" id={`${id}-inicio-error`}>
+              {error('inicio')}
+            </p>
+          )}
         </div>
       </div>
       <p className="ayuda" id={`${id}-inicio-ayuda`}>
-        {esFechaIso(inicio) ? `La semana 1 del plan empieza el ${fechaLarga(inicio)}.` : 'Elegí el lunes en que empezás.'}
+        {fechaOk ? `La semana 1 del plan empieza el ${fechaLarga(inicio)}.` : 'Elegí el lunes en que empezás.'}
       </p>
-      {error && (
-        <p className="error" role="alert">
-          {error}
+      {errores.length > 0 && (
+        <p className="solo-lector" role="alert">
+          {errores.map((e) => e.mensaje).join(' ')}
         </p>
       )}
       <button type="submit" className="boton primario">
@@ -183,6 +208,7 @@ function PerfilYRutina({ perfil, alGuardar }: { perfil: Perfil; alGuardar: (p: P
     </form>
   );
 }
+
 
 const CAMPOS: { titulo: string; campos: [keyof FormObjetivos, string][]; error: string[] }[] = [
   { titulo: 'Proteína (g por día)', campos: [['pObj', 'Objetivo'], ['pMin', 'Mínimo'], ['pMax', 'Máximo']], error: ['proteina.obj', 'proteina.rango'] },

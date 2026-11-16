@@ -1,3 +1,4 @@
+import { aIso, deIso, esFechaIso } from './fechas';
 import type { Objetivos, Perfil } from './tipos';
 
 /** Objetivos del plan Fase 1 (recomposición en mantenimiento). */
@@ -23,6 +24,43 @@ export function perfilInicial(): Perfil {
 export interface ErrorValidacion {
   campo: string;
   mensaje: string;
+}
+
+/** Largo máximo del nombre (se usa en el saludo de Hoy). */
+export const LARGO_NOMBRE = 30;
+/** Fecha más temprana aceptada para el inicio de la rutina. */
+export const INICIO_MINIMO = '2020-01-01';
+
+/** Fecha más tardía aceptada para el inicio de la rutina: dentro de un año. */
+export function inicioMaximo(hoy: string): string {
+  const d = deIso(hoy);
+  d.setFullYear(d.getFullYear() + 1);
+  return aIso(d);
+}
+
+const dma = (iso: string) => {
+  const d = deIso(iso);
+  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+};
+
+/**
+ * Revisa el nombre (opcional: solo letras, espacios y signos de nombres como el apóstrofo
+ * o el guion) y la fecha de inicio de la rutina (entre 2020 y dentro de un año).
+ * Devuelve la lista de problemas (vacía si están bien).
+ */
+export function validarPerfil(nombre: string, inicio: string, hoy: string): ErrorValidacion[] {
+  const e: ErrorValidacion[] = [];
+  const n = nombre.trim();
+  if (n.length > LARGO_NOMBRE || (n && !/^\p{L}[\p{L}\p{M} .'’-]*$/u.test(n))) {
+    e.push({ campo: 'nombre', mensaje: `El nombre va solo con letras y espacios, hasta ${LARGO_NOMBRE} caracteres.` });
+  }
+  const max = inicioMaximo(hoy);
+  if (!esFechaIso(inicio)) {
+    e.push({ campo: 'inicio', mensaje: 'Elegí una fecha válida.' });
+  } else if (inicio < INICIO_MINIMO || inicio > max) {
+    e.push({ campo: 'inicio', mensaje: `Elegí una fecha entre el ${dma(INICIO_MINIMO)} y el ${dma(max)}.` });
+  }
+  return e;
 }
 
 /** Revisa que los objetivos sean coherentes. Devuelve la lista de problemas (vacía si están bien). */

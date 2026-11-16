@@ -555,10 +555,13 @@
   display: flex;
   gap: 4px;
   padding: 4px;
-  background: var(--tinte);
+  /* Opaco (el gris sobre el color de la hoja) y con un borde del color de la hoja: queda
+     fijo arriba al bajar por la lista y lo que pasa por detrás no se ve. */
+  background: linear-gradient(var(--tinte), var(--tinte)), var(--superficie);
+  box-shadow: 0 0 0 6px var(--superficie);
   border-radius: 14px;
   position: sticky;
-  top: -4px;
+  top: 0;
   z-index: 2;
 }
 

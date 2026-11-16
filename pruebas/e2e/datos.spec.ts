@@ -36,6 +36,16 @@ test('cambiar los objetivos: validación, guardado y efecto en el diario', async
 test('cambiar el inicio de la rutina mueve la semana del plan', async ({ page }) => {
   await page.goto('/ajustes');
   const form = page.getByRole('form', { name: 'Perfil y rutina' });
+  // Datos no válidos: no se guardan y cada campo dice qué corregir.
+  await form.getByLabel('Nombre').fill('21 313123 123');
+  await form.getByLabel('Inicio de la rutina').fill('9999-12-01');
+  await form.getByRole('button', { name: 'Guardar' }).click();
+  await expect(form.getByLabel('Nombre')).toBeFocused();
+  await expect(form.getByLabel('Nombre')).toHaveAccessibleDescription('El nombre va solo con letras y espacios, hasta 30 caracteres.');
+  await expect(form.getByLabel('Inicio de la rutina')).toHaveAttribute('aria-invalid', 'true');
+  await expect(form.getByLabel('Inicio de la rutina')).toHaveAccessibleDescription(/Elegí una fecha entre el 1\/1\/2020 y el 16\/11\/2027/);
+  await expect(page.getByRole('status').filter({ hasText: 'Guardado' })).toHaveCount(0);
+  await accesible(page);
   await form.getByLabel('Nombre').fill('Nahu');
   await form.getByLabel('Inicio de la rutina').fill('2026-11-16');
   await form.getByRole('button', { name: 'Guardar' }).click();
