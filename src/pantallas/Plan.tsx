@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Icono } from '../componentes/Icono';
 import { fechaLarga, sumarDias } from '../dominio/fechas';
 import { num } from '../dominio/formato';
-import { ETAPAS } from '../dominio/rutina';
+import { ETAPAS, textoSemana } from '../dominio/rutina';
+import type { Rutina } from '../dominio/tipos';
 import { useDatos } from '../estado/Proveedor';
 import { useTitulo } from '../estado/hooks';
 import estilos from './Plan.module.css';
@@ -21,6 +22,102 @@ const INDICE = [
 ] as const;
 
 export default function Plan() {
+  const { rutina } = useDatos();
+  // El plan escrito (estrategia, nutrición, hábitos…) es el de la rutina Fase 1. Las demás
+  // rutinas muestran su propia guía.
+  if (rutina?.id === 'fase1') return <PlanFase1 />;
+  return <PlanRutina rutina={rutina} />;
+}
+
+function PlanRutina({ rutina }: { rutina: Rutina | null }) {
+  useTitulo('Tu plan');
+  const { perfil } = useDatos();
+  if (!rutina) {
+    return (
+      <div className="pila pantalla">
+        <header className="cabecera">
+          <h1>Tu plan</h1>
+        </header>
+        <p className="vacio">
+          <Icono nombre="rutina" tam={28} />
+          Elegí una rutina y acá vas a ver cómo se organiza tu semana.
+          <Link to="/rutina" className="boton primario">
+            Elegir mi rutina
+          </Link>
+        </p>
+      </div>
+    );
+  }
+  return (
+    <article className="pila pantalla">
+      <header className="cabecera">
+        <p className="ceja">Tu plan</p>
+        <h1>{rutina.nombre}</h1>
+        <p className="sub">
+          {rutina.descripcion} Desde el {fechaLarga(perfil.inicioRutina)}.
+        </p>
+      </header>
+
+      <section className="tarjeta" aria-labelledby="t-semana-rutina">
+        <h2 id="t-semana-rutina" className="titulo-seccion con-icono">
+          <Icono nombre="hoy" tam={20} />
+          Tu semana
+        </h2>
+        <p>{textoSemana(rutina)} Los demás días: {rutina.descanso.charAt(0).toLowerCase() + rutina.descanso.slice(1)}</p>
+        <div className="desborde">
+          <table className="tabla">
+            <thead>
+              <tr>
+                <th scope="col">Día</th>
+                <th scope="col">Entrenamiento</th>
+                <th scope="col">Ejercicios</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rutina.dias.map((d) => (
+                <tr key={d.id}>
+                  <td>{d.dia}</td>
+                  <td>
+                    <b>{d.nombre}</b>
+                    <br />
+                    <span className="tenue">{d.foco}</span>
+                  </td>
+                  <td>{d.ex.map((e) => `${e.n} ${e.s}×${e.r[0] === e.r[1] ? e.r[0] : `${e.r[0]}–${e.r[1]}`}`).join(' · ')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="tarjeta" aria-labelledby="t-reglas-rutina">
+        <h2 id="t-reglas-rutina" className="titulo-seccion con-icono">
+          <Icono nombre="series" tam={20} />
+          Cómo progresar
+        </h2>
+        <ul className="lista-reglas">
+          <li>
+            <b>Doble progresión</b>: cuando completás el máximo de repeticiones en todas las series, subí el peso lo mínimo posible y volvé al mínimo del rango.
+          </li>
+          <li>
+            <b>RIR</b> son las repeticiones que te quedan en reserva: con RIR 2, terminás la serie sabiendo que podías hacer 2 más con buena técnica.
+          </li>
+          <li>
+            <b>Técnica primero</b>: si la técnica se rompe, la serie terminó. Cada ejercicio tiene su explicación y una alternativa en «Técnica e historial».
+          </li>
+          <li>
+            <b>Constancia</b>: mantené la misma rutina al menos 8 semanas antes de cambiarla. Si una semana faltás, seguí en orden.
+          </li>
+          <li>
+            <b>Molestias</b>: si algo duele (no es lo mismo que cansarse), bajá el peso o cambiá por la alternativa. Si sigue, consultá con un profesional.
+          </li>
+        </ul>
+      </section>
+    </article>
+  );
+}
+
+function PlanFase1() {
   useTitulo('Plan Fase 1');
   const { perfil } = useDatos();
   const { hash } = useLocation();

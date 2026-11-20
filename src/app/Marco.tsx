@@ -2,16 +2,17 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Icono, type NombreIcono } from '../componentes/Icono';
 import { NOMBRE_APP } from '../config';
+import type { Seccion } from '../dominio/tipos';
 import { useDatos } from '../estado/Proveedor';
 import { elegirTema, useTema } from '../estado/tema';
 import estilos from './Marco.module.css';
 
-const SECCIONES: { a: string; texto: string; icono: NombreIcono; fin?: boolean }[] = [
-  { a: '/', texto: 'Hoy', icono: 'hoy', fin: true },
-  { a: '/rutina', texto: 'Rutina', icono: 'rutina' },
-  { a: '/comidas', texto: 'Comidas', icono: 'comidas' },
-  { a: '/progreso', texto: 'Progreso', icono: 'progreso' },
-  { a: '/plan', texto: 'Plan', icono: 'plan' },
+const SECCIONES: { a: string; texto: string; icono: NombreIcono; seccion: Seccion; fin?: boolean }[] = [
+  { a: '/', texto: 'Hoy', icono: 'hoy', seccion: 'rutina', fin: true },
+  { a: '/rutina', texto: 'Rutina', icono: 'rutina', seccion: 'rutina' },
+  { a: '/comidas', texto: 'Comidas', icono: 'comidas', seccion: 'comidas' },
+  { a: '/progreso', texto: 'Progreso', icono: 'progreso', seccion: 'progreso' },
+  { a: '/plan', texto: 'Plan', icono: 'plan', seccion: 'plan' },
 ];
 
 function EstadoConexion() {
@@ -39,7 +40,12 @@ function BotonTema() {
   const { tema } = useTema();
   const oscuro = tema === 'oscuro';
   return (
-    <button type="button" className={estilos.icono} onClick={() => elegirTema(oscuro ? 'claro' : 'oscuro')} aria-label={oscuro ? 'Pasar a modo claro' : 'Pasar a modo oscuro'}>
+    <button
+      type="button"
+      className={estilos.icono}
+      onClick={() => elegirTema(oscuro ? 'claro' : 'oscuro')}
+      aria-label={oscuro ? 'Pasar a modo claro' : 'Pasar a modo oscuro'}
+    >
       <Icono nombre={oscuro ? 'sol' : 'luna'} />
       <span className={estilos.textoRiel}>{oscuro ? 'Modo claro' : 'Modo oscuro'}</span>
     </button>
@@ -48,6 +54,7 @@ function BotonTema() {
 
 export function Marco({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
+  const { acceso, puede } = useDatos();
   const principal = useRef<HTMLElement>(null);
   const primerRender = useRef(true);
 
@@ -74,6 +81,12 @@ export function Marco({ children }: { children: ReactNode }) {
         <EstadoConexion />
         <div className={estilos.herramientas}>
           <BotonTema />
+          {acceso.admin && (
+            <NavLink to="/admin" className={estilos.icono} aria-label="Administración">
+              <Icono nombre="personas" />
+              <span className={estilos.textoRiel}>Administración</span>
+            </NavLink>
+          )}
           <NavLink to="/ajustes" className={estilos.icono} aria-label="Ajustes">
             <Icono nombre="ajustes" />
             <span className={estilos.textoRiel}>Ajustes</span>
@@ -81,12 +94,25 @@ export function Marco({ children }: { children: ReactNode }) {
         </div>
       </header>
       <nav className={estilos.nav} aria-label="Principal">
-        {SECCIONES.map((s) => (
-          <NavLink key={s.a} to={s.a} end={s.fin} className={estilos.enlace}>
-            <Icono nombre={s.icono} />
-            <span>{s.texto}</span>
-          </NavLink>
-        ))}
+        {SECCIONES.map((s) => {
+          const bloqueada = !puede(s.seccion);
+          return (
+            <NavLink key={s.a} to={s.a} end={s.fin} className={estilos.enlace} data-bloqueada={bloqueada || undefined}>
+              <span className={estilos.iconoNav}>
+                <Icono nombre={s.icono} />
+                {bloqueada && (
+                  <span className={estilos.candado} aria-hidden="true">
+                    <Icono nombre="candado" tam={12} />
+                  </span>
+                )}
+              </span>
+              <span>
+                {s.texto}
+                {bloqueada && <span className="solo-lector"> (no habilitado)</span>}
+              </span>
+            </NavLink>
+          );
+        })}
       </nav>
       <main id="contenido" ref={principal} tabIndex={-1} className={estilos.principal}>
         {children}

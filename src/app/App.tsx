@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import type { Seccion } from '../dominio/tipos';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ProveedorAvisos } from '../estado/Avisos';
 import { ProveedorDatos, ProveedorSesion, useDatos, useSesion } from '../estado/Proveedor';
@@ -8,7 +9,9 @@ import { Hoy } from '../pantallas/Hoy';
 import { Ingreso } from '../pantallas/Ingreso';
 import { NoEncontrada } from '../pantallas/NoEncontrada';
 import { DiaRutinaPantalla } from '../pantallas/rutina/DiaRutina';
+import { ElegirRutina } from '../pantallas/rutina/ElegirRutina';
 import { Rutina } from '../pantallas/rutina/Rutina';
+import { SeccionBloqueada } from '../pantallas/SeccionBloqueada';
 import { SinAcceso } from '../pantallas/SinAcceso';
 import { crearServicios, type ResultadoServicios } from '../servicios';
 import { AvisoActualizacion } from './AvisoActualizacion';
@@ -19,6 +22,7 @@ import { Marco } from './Marco';
 const Progreso = lazy(() => import('../pantallas/progreso/Progreso'));
 const Plan = lazy(() => import('../pantallas/Plan'));
 const Ajustes = lazy(() => import('../pantallas/Ajustes'));
+const Admin = lazy(() => import('../pantallas/admin/Admin'));
 
 export function App() {
   const [resultado, setResultado] = useState<ResultadoServicios | null>(null);
@@ -58,10 +62,7 @@ function RutasRaiz() {
 
   return (
     <Routes>
-      <Route
-        path="/ingresar"
-        element={usuario ? <Navigate to={(ubicacion.state as { desde?: string } | null)?.desde ?? '/'} replace /> : <Ingreso />}
-      />
+      <Route path="/ingresar" element={usuario ? <Navigate to={(ubicacion.state as { desde?: string } | null)?.desde ?? '/'} replace /> : <Ingreso />} />
       <Route
         path="*"
         element={
@@ -80,6 +81,17 @@ function RutasRaiz() {
   );
 }
 
+/** Muestra la pantalla solo si la cuenta tiene habilitada la sección; si no, el panel deshabilitado. */
+function ConPermiso({ seccion, children }: { seccion: Seccion; children: ReactNode }) {
+  const { puede } = useDatos();
+  return puede(seccion) ? children : <SeccionBloqueada seccion={seccion} />;
+}
+
+function SoloAdmin({ children }: { children: ReactNode }) {
+  const { acceso } = useDatos();
+  return acceso.admin ? children : <NoEncontrada />;
+}
+
 function AppPrivada() {
   const { sinAcceso } = useDatos();
   if (sinAcceso) return <SinAcceso />;
@@ -89,12 +101,49 @@ function AppPrivada() {
         <Routes>
           <Route path="/" element={<Hoy />} />
           <Route path="/rutina" element={<Rutina />} />
+          <Route path="/rutina/elegir" element={<ElegirRutina cambiando />} />
           <Route path="/rutina/:diaId" element={<DiaRutinaPantalla />} />
-          <Route path="/comidas" element={<Comidas />} />
-          <Route path="/comidas/:fecha" element={<Comidas />} />
-          <Route path="/progreso" element={<Progreso />} />
-          <Route path="/plan" element={<Plan />} />
+          <Route
+            path="/comidas"
+            element={
+              <ConPermiso seccion="comidas">
+                <Comidas />
+              </ConPermiso>
+            }
+          />
+          <Route
+            path="/comidas/:fecha"
+            element={
+              <ConPermiso seccion="comidas">
+                <Comidas />
+              </ConPermiso>
+            }
+          />
+          <Route
+            path="/progreso"
+            element={
+              <ConPermiso seccion="progreso">
+                <Progreso />
+              </ConPermiso>
+            }
+          />
+          <Route
+            path="/plan"
+            element={
+              <ConPermiso seccion="plan">
+                <Plan />
+              </ConPermiso>
+            }
+          />
           <Route path="/ajustes" element={<Ajustes />} />
+          <Route
+            path="/admin"
+            element={
+              <SoloAdmin>
+                <Admin />
+              </SoloAdmin>
+            }
+          />
           <Route path="*" element={<NoEncontrada />} />
         </Routes>
       </Suspense>

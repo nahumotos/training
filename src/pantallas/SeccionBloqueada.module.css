@@ -1,0 +1,35 @@
+.compacta {
+  background: var(--superficie);
+}
+
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--superficie-2);
+  color: var(--tenue);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.panel {
+  align-items: center;
+  text-align: center;
+  padding: var(--e-7) var(--e-5);
+}
+
+.panel p {
+  max-width: 420px;
+}
+
+.icono {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--superficie-2);
+  color: var(--tenue);
+}

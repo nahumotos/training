@@ -180,6 +180,8 @@ export function sanearPerfil(v: unknown): Perfil {
   p.nombre = texto(v.nombre, 60);
   if (esFechaIso(v.inicioRutina)) p.inicioRutina = v.inicioRutina;
   p.objetivos = sanearObjetivos(v.objetivos);
+  // Sin el campo, queda sin definir: perfiles anteriores a las rutinas para elegir.
+  if ('rutina' in v) p.rutina = typeof v.rutina === 'string' && /^[a-z0-9-]{1,30}$/.test(v.rutina) ? v.rutina : null;
   return p;
 }
 

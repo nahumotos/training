@@ -123,6 +123,8 @@ export function TarjetaEjercicio({
 
   const sug = ultima ? sugerencia(ex, ultima.series) : null;
   const pesoNota = nota?.peso ?? null;
+  /** Sin peso de trabajo (o sin peso, en peso corporal) y sin nota. */
+  const vacia = (pesoNota === null || ex.unidad === 'corporal') && !nota?.nota;
   const total = totalConBarra(pesoNota, ex.unidad);
   const hist = verTecnica ? historial(ex.id, sesiones.filter((s) => s.id !== sesion?.id)) : [];
   const idPanel = `${idBase}-anim`;
@@ -176,7 +178,7 @@ export function TarjetaEjercicio({
           }}
         />
       ) : (
-        <div className={estilos.nota} data-vacia={(pesoNota === null || !conPeso) && !nota?.nota ? true : undefined}>
+        <div className={estilos.nota} data-vacia={vacia || undefined}>
           <Icono nombre="lapiz" tam={18} />
           <div className={estilos.textoNota}>
             {pesoNota !== null && conPeso ? (
@@ -190,7 +192,7 @@ export function TarjetaEjercicio({
             {nota?.nota && <span className={estilos.notaLibre}>{nota.nota}</span>}
           </div>
           <button type="button" className={estilos.botonNota} onClick={() => setEditandoNota(true)}>
-            {pesoNota === null && conPeso && !nota?.nota ? 'Anotar' : 'Editar'}
+            {vacia ? 'Anotar' : 'Editar'}
           </button>
         </div>
       )}

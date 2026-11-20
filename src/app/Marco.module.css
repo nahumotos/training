@@ -168,6 +168,35 @@
   color: var(--rosa);
 }
 
+.iconoNav {
+  position: relative;
+  display: grid;
+}
+
+/* Sección no habilitada: el ícono atenuado y un candado chico encima. */
+.enlace[data-bloqueada] .iconoNav > svg {
+  opacity: 0.45;
+}
+
+.candado {
+  position: absolute;
+  right: -6px;
+  bottom: -3px;
+  width: 17px;
+  height: 17px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--tenue);
+  box-shadow: 0 0 0 1.5px var(--vidrio);
+}
+
+.candado svg {
+  width: 12px !important;
+  height: 12px !important;
+}
+
 .principal {
   width: 100%;
   max-width: var(--ancho-amplio);

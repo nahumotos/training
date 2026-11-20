@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { EnlaceDeslizante } from '../../app/EnlaceDeslizante';
 import { MiniaturaAnimacion, PanelAnimacion, SinAnimacion } from '../../componentes/Animacion';
 import { Icono } from '../../componentes/Icono';
 import { DIAS_HISTORIAL } from '../../config';
 import { sumarDias } from '../../dominio/fechas';
 import { diaPorId, idSesion, seriesHechas, totalSeries } from '../../dominio/rutina';
-import type { DiaRutina, Ejercicio, NotaEjercicio, SerieHecha, Sesion } from '../../dominio/tipos';
+import type { Calentamiento, DiaRutina, Ejercicio, NotaEjercicio, SerieHecha, Sesion } from '../../dominio/tipos';
 import { useAvisos } from '../../estado/Avisos';
 import { useDatos } from '../../estado/Proveedor';
 import { usePantallaEncendida, useTemporizador } from '../../estado/Temporizador';
@@ -44,10 +44,52 @@ function bloques(dia: DiaRutina): { etiquetas: string[]; ejercicios: Ejercicio[]
 
 export function DiaRutinaPantalla() {
   const { diaId = '' } = useParams();
-  const dia = diaPorId(diaId);
+  const { rutina } = useDatos();
+  const dia = rutina ? diaPorId(rutina, diaId) : undefined;
   useTitulo(dia ? dia.nombre : 'Rutina');
+  // Sin rutina elegida, se elige primero.
+  if (!rutina) return <Navigate to="/rutina" replace />;
   if (!dia) return <NoEncontrada />;
   return <DiaRutinaContenido dia={dia} />;
+}
+
+/** Lista de movimientos con foto (entrada en calor o lo de «Para terminar»). */
+function ListaMovimientos({
+  items,
+  idBase,
+  abierta,
+  alTocar,
+}: {
+  items: Calentamiento[];
+  idBase: string;
+  abierta: string | null;
+  alTocar: (id: string | null) => void;
+}) {
+  return (
+    <ul className={estilos.calor}>
+      {items.map((c, i) => {
+        const idPanel = `${idBase}-${i}`;
+        const estaAbierta = abierta === idPanel;
+        return (
+          <li key={c.n}>
+            <div className={estilos.filaCalor}>
+              {c.img ? (
+                <MiniaturaAnimacion img={c.img} nombre={c.n} abierta={estaAbierta} idPanel={idPanel} alTocar={() => alTocar(estaAbierta ? null : idPanel)} />
+              ) : (
+                <SinAnimacion />
+              )}
+              <div className={estilos.textoCalor}>
+                <b>{c.n}</b>
+                {c.nota && <span className="tenue">{c.nota}</span>}
+              </div>
+              <span className={`${estilos.dosis} num`}>{c.dosis}</span>
+            </div>
+            {c.img && estaAbierta && <PanelAnimacion img={c.img} nombre={c.n} id={idPanel} leyenda="Posición inicial y final del movimiento." />}
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
@@ -114,7 +156,14 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
     setConfirmarReinicio(false);
     setRonda((r) => r + 1);
     avisar('Borraste las series de hoy', {
-      accion: { texto: 'Deshacer', hacer: () => void almacen.guardarSesion(copia).then(() => setRonda((r) => r + 1)).catch(() => undefined) },
+      accion: {
+        texto: 'Deshacer',
+        hacer: () =>
+          void almacen
+            .guardarSesion(copia)
+            .then(() => setRonda((r) => r + 1))
+            .catch(() => undefined),
+      },
     });
   };
 
@@ -154,12 +203,18 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
         </ul>
       </header>
       <div className={estilos.progresoFijo} data-tipo={dia.tipo}>
-        <div className={estilos.avance} role="progressbar" aria-label="Series hechas hoy" aria-valuemin={0} aria-valuemax={total} aria-valuenow={hechas} aria-valuetext={`${hechas} de ${total}`}>
+        <div
+          className={estilos.avance}
+          role="progressbar"
+          aria-label="Series hechas hoy"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={hechas}
+          aria-valuetext={`${hechas} de ${total}`}
+        >
           <span style={{ transform: `scaleX(${total ? hechas / total : 0})` }} />
         </div>
-        <p className="num">
-          {hechas ? `${hechas} de ${total} series hechas hoy` : 'Marcá cada serie al terminarla: arranca el descanso y queda guardada.'}
-        </p>
+        <p className="num">{hechas ? `${hechas} de ${total} series hechas hoy` : 'Marcá cada serie al terminarla: arranca el descanso y queda guardada.'}</p>
       </div>
 
       <details className="tarjeta desplegable" open={calorAbierto} onToggle={(e) => setCalorAbierto(e.currentTarget.open)}>
@@ -169,29 +224,7 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
           </span>
           <Icono nombre="abajo" />
         </summary>
-        <ul className={estilos.calor}>
-          {dia.calor.map((c, i) => {
-            const idPanel = `calor-${dia.id}-${i}`;
-            const abierta = animacionAbierta === idPanel;
-            return (
-              <li key={c.n}>
-                <div className={estilos.filaCalor}>
-                  {c.img ? (
-                    <MiniaturaAnimacion img={c.img} nombre={c.n} abierta={abierta} idPanel={idPanel} alTocar={() => setAnimacionAbierta(abierta ? null : idPanel)} />
-                  ) : (
-                    <SinAnimacion />
-                  )}
-                  <div className={estilos.textoCalor}>
-                    <b>{c.n}</b>
-                    {c.nota && <span className="tenue">{c.nota}</span>}
-                  </div>
-                  <span className={`${estilos.dosis} num`}>{c.dosis}</span>
-                </div>
-                {c.img && abierta && <PanelAnimacion img={c.img} nombre={c.n} id={idPanel} leyenda="Posición inicial y final del movimiento." />}
-              </li>
-            );
-          })}
-        </ul>
+        <ListaMovimientos items={dia.calor} idBase={`calor-${dia.id}`} abierta={animacionAbierta} alTocar={setAnimacionAbierta} />
       </details>
 
       <div className="fila-titulo">
@@ -236,6 +269,15 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
             )}
           </div>
 
+          {dia.final?.length ? (
+            <section className="tarjeta" aria-labelledby={`final-${dia.id}`}>
+              <h2 id={`final-${dia.id}`} className="titulo-seccion">
+                Para terminar
+              </h2>
+              <ListaMovimientos items={dia.final} idBase={`final-${dia.id}`} abierta={animacionAbierta} alTocar={setAnimacionAbierta} />
+            </section>
+          ) : null}
+
           {hechas > 0 && (
             <div className={estilos.cierre}>
               <button type="button" className="boton primario ancho" onClick={terminar}>
@@ -264,8 +306,11 @@ function DiaRutinaContenido({ dia }: { dia: DiaRutina }) {
             </div>
           )}
           <p className={estilos.credito}>
-            Fotos de los ejercicios: <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener noreferrer">Free Exercise DB</a>, de dominio
-            público. Las máquinas pueden ser distintas a las de tu gimnasio: fijate en el movimiento.
+            Fotos de los ejercicios:{' '}
+            <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener noreferrer">
+              Free Exercise DB
+            </a>
+            , de dominio público. Las máquinas pueden ser distintas a las de tu gimnasio: fijate en el movimiento.
           </p>
         </>
       ) : (

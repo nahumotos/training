@@ -1,4 +1,5 @@
 import { useId, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { Cargando } from '../app/Estados';
 import { Icono } from '../componentes/Icono';
 import { NOMBRE_APP, VERSION } from '../config';
@@ -44,7 +45,7 @@ const deForm = (f: FormObjetivos): Objetivos => {
 export default function Ajustes() {
   useTitulo('Ajustes');
   const { servicios } = useSesion();
-  const { perfil, perfilCargado, almacen, usuario } = useDatos();
+  const { perfil, perfilCargado, almacen, usuario, rutina, puede, acceso } = useDatos();
 
   const guardarPerfil = (p: Perfil) => almacen.guardarPerfil(p).catch(() => undefined);
 
@@ -58,10 +59,32 @@ export default function Ajustes() {
       {perfilCargado ? (
         <>
           <PerfilYRutina key={`${perfil.nombre}|${perfil.inicioRutina}`} perfil={perfil} alGuardar={guardarPerfil} />
-          <ObjetivosForm key={JSON.stringify(perfil.objetivos)} perfil={perfil} alGuardar={guardarPerfil} />
+          {puede('comidas') && <ObjetivosForm key={JSON.stringify(perfil.objetivos)} perfil={perfil} alGuardar={guardarPerfil} />}
         </>
       ) : (
         <Cargando enLinea />
+      )}
+      <section className="tarjeta" aria-labelledby="aj-rutina">
+        <h2 id="aj-rutina" className="titulo-seccion con-icono">
+          <Icono nombre="rutina" tam={20} />
+          Tu rutina
+        </h2>
+        <p>{rutina ? rutina.nombre : 'Todavía no elegiste una rutina.'}</p>
+        <Link to={rutina ? '/rutina/elegir' : '/rutina'} className="boton">
+          {rutina ? 'Cambiar de rutina' : 'Elegir mi rutina'}
+        </Link>
+      </section>
+      {acceso.admin && (
+        <section className="tarjeta" aria-labelledby="aj-admin">
+          <h2 id="aj-admin" className="titulo-seccion con-icono">
+            <Icono nombre="personas" tam={20} />
+            Administración
+          </h2>
+          <p className="tenue">Las cuentas registradas y qué secciones ve cada una.</p>
+          <Link to="/admin" className="boton">
+            Abrir el panel de administración
+          </Link>
+        </section>
       )}
       <Apariencia />
       <Datos />
@@ -75,9 +98,11 @@ export default function Ajustes() {
           Ingresaste como <b>{usuario.email}</b>
           {servicios.modo === 'demo' && ' (modo demo: los datos quedan solo en este navegador)'}.
         </p>
-        <p className="tenue">
-          Cálculo de comidas con IA: {servicios.ia.disponible ? 'activado' : 'no configurado (falta la dirección del servicio en la configuración del sitio)'}.
-        </p>
+        {puede('comidas') && (
+          <p className="tenue">
+            Cálculo de comidas con IA: {servicios.ia.disponible ? 'activado' : 'no configurado (falta la dirección del servicio en la configuración del sitio)'}.
+          </p>
+        )}
         <button type="button" className="boton peligro" onClick={() => void servicios.auth.salir()}>
           Cerrar sesión
         </button>

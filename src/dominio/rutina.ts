@@ -1,11 +1,50 @@
-import { RUTINA_FASE1 } from '../datos/rutinaFase1';
 import { diaSemana, diferenciaDias, lunesDe, sumarDias } from './fechas';
-import type { DiaRutina, Ejercicio, NotaEjercicio, SerieHecha, Sesion, UnidadPeso } from './tipos';
+import type { DiaRutina, Ejercicio, NivelRutina, NotaEjercicio, ObjetivoRutina, Rutina, SerieHecha, Sesion, UnidadPeso } from './tipos';
 
-export const DIAS_RUTINA = RUTINA_FASE1;
+export function diaPorId(rutina: Rutina, id: string): DiaRutina | undefined {
+  return rutina.dias.find((d) => d.id === id);
+}
 
-export function diaPorId(id: string): DiaRutina | undefined {
-  return DIAS_RUTINA.find((d) => d.id === id);
+export const NOMBRES_NIVEL: Record<NivelRutina, string> = { principiante: 'Principiante', intermedio: 'Intermedio', avanzado: 'Avanzado' };
+
+/**
+ * Rutinas para sugerir: las de esa cantidad de días y ese objetivo (sin objetivo, todas las de
+ * esos días). Si no hay ninguna, las del objetivo con la cantidad de días más parecida.
+ * `otras`: las demás de esa cantidad de días.
+ */
+export function sugerirRutinas(
+  plantillas: Rutina[],
+  dias: number,
+  objetivo: ObjetivoRutina | null,
+): { principales: Rutina[]; exactas: boolean; otras: Rutina[] } {
+  const elegibles = plantillas.filter((p) => !p.oculta);
+  const delObjetivo = elegibles.filter((p) => !objetivo || p.objetivos.includes(objetivo));
+  const exactas = delObjetivo.filter((p) => p.frecuencia === dias);
+  const otras = elegibles.filter((p) => p.frecuencia === dias && !exactas.includes(p));
+  if (exactas.length) return { principales: exactas, exactas: true, otras };
+  const distancia = Math.min(...delObjetivo.map((p) => Math.abs(p.frecuencia - dias)));
+  return { principales: delObjetivo.filter((p) => Math.abs(p.frecuencia - dias) === distancia), exactas: false, otras };
+}
+
+/** Fecha de un día de la semana (0 domingo … 6 sábado) en la semana que empieza en `lunes`. */
+export function fechaEnSemana(lunes: string, dow: number): string {
+  return sumarDias(lunes, (dow + 6) % 7);
+}
+
+const NOMBRES_DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+
+/** «lunes, miércoles y viernes». */
+export function listaDias(dows: number[]): string {
+  const orden = [...dows].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map((d) => NOMBRES_DIAS[d]!);
+  return orden.length > 1 ? `${orden.slice(0, -1).join(', ')} y ${orden.at(-1)}` : (orden[0] ?? '');
+}
+
+/** Cómo se organiza la semana, en una línea: «Lunes, miércoles y viernes; sábado, comodín.» */
+export function textoSemana(rutina: Rutina): string {
+  const entreno = rutina.dias.map((d) => d.dow);
+  const comodin = rutina.comodin.filter((d) => !entreno.includes(d));
+  const frase = listaDias(entreno);
+  return `${frase.charAt(0).toUpperCase()}${frase.slice(1)}${comodin.length ? `; ${listaDias(comodin)}, comodín` : ''}.`;
 }
 
 export function idSesion(fecha: string, diaId: string): string {
@@ -26,25 +65,25 @@ export function seriesHechas(s: Sesion | null | undefined): number {
 export type QueToca =
   | { tipo: 'antes'; inicio: string }
   | { tipo: 'entreno'; dia: DiaRutina }
-  | { tipo: 'descanso'; caminata: string; domingo: boolean }
-  | { tipo: 'comodin'; pendientes: DiaRutina[] };
+  | { tipo: 'descanso'; consejo: string; domingo: boolean }
+  | { tipo: 'comodin'; pendientes: DiaRutina[]; dow: number };
 
 /**
- * Qué corresponde según el día de la semana. El sábado es comodín: si faltó a un día
- * de entrenamiento de esa semana, lo sugiere.
+ * Qué corresponde según el día de la semana. Los días de comodín de la rutina (el sábado,
+ * en la mayoría) sugieren los entrenamientos que faltaron esa semana.
  */
-export function queTocaHoy(hoy: string, inicio: string, sesiones: Sesion[]): QueToca {
+export function queTocaHoy(hoy: string, inicio: string, sesiones: Sesion[], rutina: Rutina): QueToca {
   if (hoy < inicio) return { tipo: 'antes', inicio };
   const dow = diaSemana(hoy);
-  const dia = DIAS_RUTINA.find((d) => d.dow === dow);
+  const dia = rutina.dias.find((d) => d.dow === dow);
   if (dia) return { tipo: 'entreno', dia };
-  if (dow === 6) {
+  if (rutina.comodin.includes(dow)) {
     const lunes = lunesDe(hoy);
     const hechos = diasHechosEnSemana(sesiones, lunes);
-    const pendientes = DIAS_RUTINA.filter((d) => !hechos.has(d.id) && sumarDias(lunes, d.dow - 1) >= inicio);
-    return { tipo: 'comodin', pendientes };
+    const pendientes = rutina.dias.filter((d) => !hechos.has(d.id) && fechaEnSemana(lunes, d.dow) >= inicio && fechaEnSemana(lunes, d.dow) < hoy);
+    return { tipo: 'comodin', pendientes, dow };
   }
-  return { tipo: 'descanso', caminata: '30–40 min', domingo: dow === 0 };
+  return { tipo: 'descanso', consejo: rutina.descanso, domingo: dow === 0 };
 }
 
 /** Días de rutina con al menos una serie hecha en la semana que empieza en `lunes`. */

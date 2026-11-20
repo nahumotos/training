@@ -69,6 +69,8 @@
   /* Círculos de los días: rosa para torso, azul para pierna (con letra blanca legible). */
   --torso: var(--acento);
   --pierna: #0071e3;
+  --full: #1a7a38;
+  --tiron: #7a3fd1;
   --kcal: var(--azul-vivo);
   --banda-p: var(--rosa-suave);
   --banda-k: var(--azul-suave);

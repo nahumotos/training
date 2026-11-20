@@ -62,8 +62,14 @@
   font-weight: 600;
 }
 
-.pie {
-  font-size: 14px;
+.subtitulo {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cambiar {
+  font-size: 15px;
   color: var(--tenue);
   text-align: center;
 }

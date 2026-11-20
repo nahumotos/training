@@ -1,10 +1,10 @@
 // Cálculos para la pantalla Progreso y el resumen semanal.
 
-import { DIAS_RUTINA, diasHechosEnSemana, etiquetaUnidad, seriesHechas, totalConBarra } from './rutina';
+import { diasHechosEnSemana, etiquetaUnidad, fechaEnSemana, seriesHechas, totalConBarra } from './rutina';
 import { totalesDia } from './comidas';
 import { capitalizar, diaMes, fechaCorta, horaDeMinutos, minutosDeHora, rotuloSemana, sumarDias } from './fechas';
 import { num } from './formato';
-import type { Dia, Ejercicio, Objetivos, SerieHecha, Sesion } from './tipos';
+import type { Dia, Ejercicio, Objetivos, Rutina, SerieHecha, Sesion } from './tipos';
 
 export interface MejorSerie {
   fecha: string;
@@ -38,10 +38,10 @@ export function textoSerie(ex: Pick<Ejercicio, 'unidad'>, s: Pick<SerieHecha, 'p
   return total === null ? base : `${base} (total ${num(total, 2)} kg)`;
 }
 
-/** Ejercicios básicos con su definición (el primero de la rutina con ese id). */
-export function ejerciciosBasicos(): Ejercicio[] {
+/** Ejercicios básicos de la rutina con su definición (el primero con ese id). */
+export function ejerciciosBasicos(rutina: Rutina): Ejercicio[] {
   const vistos = new Map<string, Ejercicio>();
-  for (const d of DIAS_RUTINA) for (const e of d.ex) if (e.basico && !vistos.has(e.id)) vistos.set(e.id, e);
+  for (const d of rutina.dias) for (const e of d.ex) if (e.basico && !vistos.has(e.id)) vistos.set(e.id, e);
   return [...vistos.values()];
 }
 
@@ -79,10 +79,11 @@ export interface ResumenSemana {
   mejores: { ex: Ejercicio; serie: MejorSerie | null }[];
 }
 
-export function resumenSemana(lunes: string, dias: Dia[], sesiones: Sesion[], o: Objetivos, hoy: string): ResumenSemana {
+export function resumenSemana(lunes: string, dias: Dia[], sesiones: Sesion[], o: Objetivos, hoy: string, rutina: Rutina): ResumenSemana {
   const domingo = sumarDias(lunes, 6);
   const delaSemana = dias.filter((d) => d.fecha >= lunes && d.fecha <= domingo).sort((a, b) => a.fecha.localeCompare(b.fecha));
   const sesionesSemana = sesiones.filter((s) => s.fecha >= lunes && s.fecha <= domingo);
+  // Solo cuentan los días de la rutina actual (no los de una rutina anterior).
   const hechos = diasHechosEnSemana(sesionesSemana, lunes);
   const conComida = delaSemana.map((d) => ({ d, t: totalesDia(d, o.umbralComida) })).filter((x) => x.t.conComida);
 
@@ -92,14 +93,14 @@ export function resumenSemana(lunes: string, dias: Dia[], sesiones: Sesion[], o:
   };
 
   // Un día de rutina "faltó" solo si ya pasó.
-  const faltaron = DIAS_RUTINA.filter((r) => !hechos.has(r.id) && sumarDias(lunes, r.dow - 1) < hoy).map((r) => r.nombre);
+  const faltaron = rutina.dias.filter((r) => !hechos.has(r.id) && fechaEnSemana(lunes, r.dow) < hoy).map((r) => r.nombre);
 
   return {
     lunes,
     entrenamientos: {
-      hechos: hechos.size,
-      total: DIAS_RUTINA.length,
-      dias: DIAS_RUTINA.filter((r) => hechos.has(r.id)).map((r) => r.nombre),
+      hechos: rutina.dias.filter((r) => hechos.has(r.id)).length,
+      total: rutina.dias.length,
+      dias: rutina.dias.filter((r) => hechos.has(r.id)).map((r) => r.nombre),
       faltaron,
     },
     diasCargados: conComida.length,
@@ -116,7 +117,7 @@ export function resumenSemana(lunes: string, dias: Dia[], sesiones: Sesion[], o:
     ultimaCintura: ultimo('cintura'),
     molestias: delaSemana.filter((d) => d.molestias.trim()).map((d) => ({ fecha: d.fecha, texto: d.molestias.trim() })),
     notas: delaSemana.filter((d) => d.nota.trim()).map((d) => ({ fecha: d.fecha, texto: d.nota.trim() })),
-    mejores: ejerciciosBasicos().map((ex) => {
+    mejores: ejerciciosBasicos(rutina).map((ex) => {
       const series = mejoresSeries(ex.id, sesionesSemana);
       const mejor = series.reduce<MejorSerie | null>((a, s) => (!a || esMejor(s, a) ? s : a), null);
       return { ex, serie: mejor };

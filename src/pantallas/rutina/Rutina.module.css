@@ -684,3 +684,193 @@
 .botonesReinicio > * {
   flex: 1 1 140px;
 }
+
+.disco[data-tipo='full'] {
+  --c: var(--full);
+}
+
+.disco[data-tipo='empuje'] {
+  --c: var(--torso);
+}
+
+.disco[data-tipo='tiron'] {
+  --c: var(--tiron);
+}
+
+/* ---------- Elegir rutina ---------- */
+
+.frecuencias {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--e-2);
+}
+
+.frecuencia,
+.objetivo {
+  position: relative;
+  display: grid;
+  cursor: pointer;
+}
+
+.frecuencia input,
+.objetivo input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.frecuencia > span {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  max-height: 72px;
+  border-radius: 50%;
+  background: var(--superficie-2);
+  font-size: 26px;
+  transition:
+    background-color var(--rapido) ease,
+    color var(--rapido) ease,
+    transform var(--rapido) ease;
+}
+
+.frecuencia input:checked + span {
+  background: var(--acento);
+  color: var(--acento-tinta);
+  transform: scale(1.04);
+}
+
+.objetivos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--e-2);
+}
+
+.objetivo > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--e-3);
+  border-radius: var(--radio);
+  background: var(--superficie-2);
+  box-shadow: inset 0 0 0 2px transparent;
+  transition: box-shadow var(--rapido) ease;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.objetivo > span > svg {
+  color: var(--rosa);
+  margin-bottom: 4px;
+}
+
+.objetivo > span > b {
+  font-size: 16px;
+}
+
+.objetivo input:checked + span {
+  box-shadow: inset 0 0 0 2px var(--acento);
+  background: var(--acento-suave);
+}
+
+.frecuencia input:focus-visible + span,
+.objetivo input:focus-visible + span {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
+
+.avisoSugeridas {
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--radio);
+  background: var(--nota-fondo);
+  color: var(--nota-tinta);
+  font-size: 15px;
+}
+
+.plantilla h3 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.plantillaCabeza {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-2);
+}
+
+.etiquetas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.etiquetas li {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--superficie-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.diasPlantilla > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  color: var(--acento-texto);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.diasPlantilla > summary::-webkit-details-marker {
+  display: none;
+}
+
+.diasPlantilla[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+.diasPlantilla ol {
+  list-style: none;
+  margin: var(--e-2) 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-3);
+}
+
+.diasPlantilla li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--e-3);
+  align-items: start;
+}
+
+.diasPlantilla li .disco {
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
+}
+
+.diasPlantilla li > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.actual {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--bien);
+  font-weight: 600;
+}

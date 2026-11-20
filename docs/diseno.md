@@ -33,7 +33,7 @@ series o mientras comés.
 | `--amarillo` | Hidratos, notas de peso, calorías arriba del rango |
 | `--blanco-disco` | Grasas |
 | `--verde-vivo` / `--bien` | Objetivo cumplido (anillo y texto) |
-| `--torso` / `--pierna` | Círculo de cada día de la rutina |
+| `--torso` / `--pierna` / `--full` / `--tiron` | Círculo de cada día de la rutina (torso o empuje, pierna, cuerpo completo, tirón) |
 
 ## Tipografía
 
@@ -84,3 +84,14 @@ Sin mayúsculas sostenidas ni etiquetas espaciadas.
 
 Desde 1200 px, Hoy, Comidas y Progreso usan dos columnas; Rutina, Plan y
 Ajustes se mantienen en una columna de lectura.
+
+## Secciones no habilitadas
+
+- En la barra de pestañas (y en la lateral) la sección sigue en su lugar, con el ícono atenuado y un
+  candado chico encima. El nombre no se atenúa, para no perder contraste; los lectores de pantalla
+  escuchan «Comidas (no habilitado)».
+- Al entrar, la pantalla explica qué es la sección y que la habilita el administrador, con un botón para
+  volver a la rutina. En Hoy, la tarjeta de Comidas se reemplaza por una versión compacta con la etiqueta
+  «No habilitado».
+- En Administración, cada sección es un interruptor (como los de Ajustes del iPhone). Rutina aparece
+  siempre encendida y bloqueada.

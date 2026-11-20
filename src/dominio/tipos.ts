@@ -111,19 +111,24 @@ export interface Calentamiento {
   nota?: string;
 }
 
+export type TipoDia = 'torso' | 'pierna' | 'full' | 'empuje' | 'tiron';
+
 export interface DiaRutina {
   id: string;
   num: number;
   /** Día de la semana: 0 domingo … 6 sábado. */
   dow: number;
   dia: string;
-  tipo: 'torso' | 'pierna';
+  /** Qué trabaja: define el color del círculo del día. */
+  tipo: TipoDia;
   letra: string;
   nombre: string;
   foco: string;
   duracion: string;
   calor: Calentamiento[];
   ex: Ejercicio[];
+  /** Para terminar (por ejemplo, cardio después de las pesas). */
+  final?: Calentamiento[];
 }
 
 export interface SerieHecha {
@@ -172,7 +177,41 @@ export interface Perfil {
   /** Primer día de la rutina, YYYY-MM-DD. */
   inicioRutina: string;
   objetivos: Objetivos;
+  /**
+   * Rutina elegida (id de las rutinas armadas). null: todavía no eligió.
+   * Sin el campo (perfiles anteriores al registro abierto): la de cada tipo de cuenta.
+   */
+  rutina?: string | null;
 }
+
+/** Qué busca la persona con la rutina. */
+export type ObjetivoRutina = 'musculo' | 'fuerza' | 'forma' | 'gluteos';
+export type NivelRutina = 'principiante' | 'intermedio' | 'avanzado';
+
+/** Una rutina completa: sus días y cómo se organiza la semana. */
+export interface Rutina {
+  id: string;
+  nombre: string;
+  /** Días de entrenamiento por semana. */
+  frecuencia: number;
+  objetivos: ObjetivoRutina[];
+  nivel: NivelRutina;
+  descripcion: string;
+  /** Días de la semana (0 domingo … 6 sábado) para recuperar un entrenamiento que faltó. */
+  comodin: number[];
+  /** Qué hacer los días sin pesas, como una oración: «Caminá 30 min.» */
+  descanso: string;
+  /** Qué hacer después de entrenar, si la rutina lo indica. */
+  despues?: string;
+  /** Detalle del comodín, por ejemplo «de 8 a 13 h». */
+  horarioComodin?: string;
+  dias: DiaRutina[];
+  /** No se ofrece para elegir (por ejemplo, un plan personal). */
+  oculta?: boolean;
+}
+
+/** Secciones de la app que se habilitan por cuenta. Rutina está siempre. */
+export type Seccion = 'rutina' | 'comidas' | 'progreso' | 'plan';
 
 export interface NotaSemana {
   /** Lunes de la semana, YYYY-MM-DD. */

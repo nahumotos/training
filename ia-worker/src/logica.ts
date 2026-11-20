@@ -6,9 +6,11 @@
  *
  * Seguridad:
  * - Solo acepta pedidos desde los orígenes de ORIGENES (CORS).
- * - Pide el token de sesión de Firebase y lo valida con Firestore: lee
- *   permitidos/{uid} con ese mismo token. Si el token es falso o venció, Firestore
- *   lo rechaza; si la cuenta no está habilitada, el documento no existe.
+ * - Pide el token de sesión de Firebase y lo valida con Firestore: lee con ese mismo
+ *   token los permisos de la cuenta. Si el token es falso o venció, Firestore lo rechaza.
+ *   Calculan las cuentas anteriores al registro abierto (permitidos/{uid}), las de los
+ *   administradores (admins/{uid}) y las que tienen habilitada la sección Comidas
+ *   (accesos/{uid}); el resto recibe 403.
  * - La clave de Anthropic vive solo como secreto del Worker.
  * - Opcional: límite de cálculos por persona y por día (KV "LIMITES").
  *
@@ -121,10 +123,17 @@ function decodificarBase64Url(s: string): string {
   return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
 }
 
+/** Secciones de un documento accesos/{uid} tal como lo devuelve la API REST de Firestore. */
+export function seccionesDeDocumento(doc: unknown): string[] {
+  const valores = (doc as { fields?: { secciones?: { arrayValue?: { values?: unknown } } } } | null)?.fields?.secciones?.arrayValue?.values;
+  if (!Array.isArray(valores)) return [];
+  return valores.map((v) => (v as { stringValue?: unknown } | null)?.stringValue).filter((v): v is string => typeof v === 'string');
+}
+
 /**
- * Devuelve el uid si el token es válido y la cuenta está habilitada.
+ * Devuelve el uid si el token es válido y la cuenta puede usar el cálculo con IA.
  * Primero descarta tokens mal formados, vencidos o de otro proyecto (sin red);
- * la firma la comprueba Firestore al leer permitidos/{uid} con ese token.
+ * la firma la comprueba Firestore al leer los permisos de la cuenta con ese token.
  */
 export async function verificarUsuario(autorizacion: string | null, proyecto: string): Promise<string> {
   const token = autorizacion?.match(/^Bearer ([A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)$/)?.[1];
@@ -146,18 +155,24 @@ export async function verificarUsuario(autorizacion: string | null, proyecto: st
     throw new Fallo(401, 'Sesión inválida o vencida');
   }
 
-  let r: Response;
+  // Las tres lecturas van juntas; un documento que no existe responde 404.
+  const base = `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(proyecto)}/databases/(default)/documents`;
+  const leer = (coleccion: string) =>
+    fetch(`${base}/${coleccion}/${uid}`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(10_000) });
+  let permitido: Response, admin: Response, acceso: Response;
   try {
-    r = await fetch(`https://firestore.googleapis.com/v1/projects/${encodeURIComponent(proyecto)}/databases/(default)/documents/permitidos/${uid}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: AbortSignal.timeout(10_000),
-    });
+    [permitido, admin, acceso] = await Promise.all([leer('permitidos'), leer('admins'), leer('accesos')]);
   } catch {
     throw new Fallo(503, 'No se pudo verificar la sesión');
   }
-  if (r.status === 401 || r.status === 403) throw new Fallo(401, 'Sesión inválida o vencida');
-  if (r.status === 404) throw new Fallo(403, 'Cuenta no habilitada');
-  if (!r.ok) throw new Fallo(503, `Firestore respondió ${r.status}`);
+  const respuestas = [permitido, admin, acceso];
+  if (respuestas.some((r) => r.status === 401 || r.status === 403)) throw new Fallo(401, 'Sesión inválida o vencida');
+  const fallida = respuestas.find((r) => !r.ok && r.status !== 404);
+  if (fallida) throw new Fallo(503, `Firestore respondió ${fallida.status}`);
+
+  let habilitada = permitido.ok || admin.ok;
+  if (!habilitada && acceso.ok) habilitada = seccionesDeDocumento(await acceso.json().catch(() => null)).includes('comidas');
+  if (!habilitada) throw new Fallo(403, 'Cuenta no habilitada');
 
   if (verificados.size > 200) verificados.clear();
   verificados.set(token, { uid, hasta: Math.min(vence, ahora + 10 * 60_000) });

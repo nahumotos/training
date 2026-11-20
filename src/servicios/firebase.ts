@@ -4,6 +4,7 @@
 import { initializeApp } from 'firebase/app';
 import {
   browserLocalPersistence,
+  createUserWithEmailAndPassword,
   indexedDBLocalPersistence,
   initializeAuth,
   onAuthStateChanged,
@@ -14,6 +15,7 @@ import {
 } from 'firebase/auth';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { AlmacenFirestore } from './almacen/firestore';
+import { crearCuentasFirestore } from './cuentasFirestore';
 import { crearServicioIA } from './ia/cliente';
 import { ErrorAuth, type Autenticacion, type Servicios } from './tipos';
 
@@ -41,6 +43,13 @@ function mensajeAuth(e: unknown): string {
       return 'Sin conexión. Revisá internet y probá de nuevo.';
     case 'auth/user-disabled':
       return 'Esta cuenta está deshabilitada.';
+    case 'auth/email-already-in-use':
+      return 'Ya hay una cuenta con ese email. Ingresá con tu contraseña o restablecela.';
+    case 'auth/weak-password':
+      return 'La contraseña tiene que tener al menos 8 caracteres.';
+    case 'auth/operation-not-allowed':
+    case 'auth/admin-restricted-operation':
+      return 'El registro de cuentas nuevas está cerrado en este sitio.';
     default:
       return 'No se pudo ingresar. Probá de nuevo en un rato.';
   }
@@ -65,6 +74,14 @@ export function crearServiciosFirebase(config: ConfigFirebase, urlIA: string | u
         throw new ErrorAuth(mensajeAuth(e));
       }
     },
+    async registrar(email, clave) {
+      try {
+        const r = await createUserWithEmailAndPassword(authFb, email.trim(), clave);
+        return r.user.uid;
+      } catch (e) {
+        throw new ErrorAuth(mensajeAuth(e));
+      }
+    },
     async recuperar(email) {
       try {
         await sendPasswordResetEmail(authFb, email.trim());
@@ -83,6 +100,7 @@ export function crearServiciosFirebase(config: ConfigFirebase, urlIA: string | u
     modo: 'firebase',
     auth,
     crearAlmacen: (uid) => new AlmacenFirestore(db, uid),
+    cuentas: crearCuentasFirestore(db),
     ia: crearServicioIA(urlIA, auth.token),
   };
 }

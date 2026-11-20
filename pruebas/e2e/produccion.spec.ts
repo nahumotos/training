@@ -56,16 +56,35 @@ async function simularGoogle(page: Page): Promise<Simulacion> {
     const req = route.request();
     const cuerpo = (req.postDataJSON() ?? {}) as Record<string, unknown>;
     s.auth.push({ url: req.url(), cuerpo });
-    const json = (status: number, body: unknown) => route.fulfill({ status, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
+    const json = (status: number, body: unknown) =>
+      route.fulfill({ status, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
     if (req.url().includes('accounts:signInWithPassword')) {
       if (cuerpo.password === 'bloqueada') return json(400, { error: { code: 400, message: 'TOO_MANY_ATTEMPTS_TRY_LATER' } });
       if (cuerpo.password !== 'clave-correcta') return json(400, { error: { code: 400, message: 'INVALID_LOGIN_CREDENTIALS' } });
-      return json(200, { kind: 'identitytoolkit#VerifyPasswordResponse', localId: UID, email: EMAIL, displayName: '', idToken: ID_TOKEN, registered: true, refreshToken: 'refresco', expiresIn: '3600' });
+      return json(200, {
+        kind: 'identitytoolkit#VerifyPasswordResponse',
+        localId: UID,
+        email: EMAIL,
+        displayName: '',
+        idToken: ID_TOKEN,
+        registered: true,
+        refreshToken: 'refresco',
+        expiresIn: '3600',
+      });
     }
     if (req.url().includes('accounts:lookup')) {
       return json(200, {
         kind: 'identitytoolkit#GetAccountInfoResponse',
-        users: [{ localId: UID, email: EMAIL, emailVerified: false, providerUserInfo: [{ providerId: 'password', email: EMAIL, federatedId: EMAIL, rawId: EMAIL }], lastLoginAt: String(AHORA.getTime()), createdAt: String(AHORA.getTime()) }],
+        users: [
+          {
+            localId: UID,
+            email: EMAIL,
+            emailVerified: false,
+            providerUserInfo: [{ providerId: 'password', email: EMAIL, federatedId: EMAIL, rawId: EMAIL }],
+            lastLoginAt: String(AHORA.getTime()),
+            createdAt: String(AHORA.getTime()),
+          },
+        ],
       });
     }
     if (req.url().includes('accounts:sendOobCode')) return json(400, { error: { code: 400, message: 'EMAIL_NOT_FOUND' } });
@@ -113,6 +132,20 @@ test('versión con Firebase: ingreso, errores de Auth, datos locales y cálculo 
   expect(ingreso?.url).toContain('key=clave-de-prueba');
   expect(ingreso?.cuerpo).toMatchObject({ email: EMAIL, returnSecureToken: true });
 
+  // Primera vez en este dispositivo y sin poder leer los permisos: abre solo con la rutina.
+  await expect(page.getByRole('region', { name: 'Comidas' })).toContainText('No habilitado');
+  await expect(page.getByRole('link', { name: 'Elegir mi rutina' })).toBeVisible();
+  await page.goto('/comidas');
+  await expect(page.getByRole('region', { name: 'Comidas no habilitado' })).toBeVisible();
+  await accesible(page);
+
+  // Un dispositivo que ya conoce el acceso de la cuenta (acá, una cuenta anterior al registro
+  // abierto) abre con ese acceso aunque no haya señal.
+  await page.evaluate((uid) => localStorage.setItem(`libreta-acceso-${uid}`, JSON.stringify({ admin: false, anterior: true, secciones: [] })), UID);
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lunes 16 de noviembre');
+  await expect(page.getByRole('link', { name: /^Empezar / })).toBeVisible();
+
   // Escritura con Firestore sin servidor: se ve al instante y queda pendiente de sincronizar.
   await page.getByRole('button', { name: /Vaso de agua · 0 L/ }).click();
   await expect(page.getByRole('button', { name: /Vaso de agua · 0,25 L/ })).toBeVisible();
@@ -129,7 +162,13 @@ test('versión con Firebase: ingreso, errores de Auth, datos locales y cálculo 
   await hoja.getByLabel('Contá qué comiste y cuánto').fill('2 milanesas con puré');
   sim.respuestaIA = {
     estado: 200,
-    cuerpo: { items: [{ n: 'Milanesa', por: '2 medianas', p: 48, c: 36, g: 30, k: 610 }, { n: 'Puré', por: '1 plato', p: 5, c: 45, g: 8, k: 260 }], comentario: 'Bien de proteína.' },
+    cuerpo: {
+      items: [
+        { n: 'Milanesa', por: '2 medianas', p: 48, c: 36, g: 30, k: 610 },
+        { n: 'Puré', por: '1 plato', p: 5, c: 45, g: 8, k: 260 },
+      ],
+      comentario: 'Bien de proteína.',
+    },
   };
   await hoja.getByRole('button', { name: 'Calcular' }).click();
   await expect(hoja.getByRole('table')).toBeVisible();

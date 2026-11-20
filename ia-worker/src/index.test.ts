@@ -8,7 +8,10 @@ const JPEG = '/9j/' + 'A'.repeat(400);
 
 function b64url(o: unknown): string {
   const bytes = new TextEncoder().encode(JSON.stringify(o));
-  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
 }
 
 let contador = 0;
@@ -17,7 +20,14 @@ function token(carga: Record<string, unknown> = {}): string {
   contador++;
   return [
     b64url({ alg: 'RS256' }),
-    b64url({ aud: PROYECTO, iss: `https://securetoken.google.com/${PROYECTO}`, sub: 'uid123', exp: Math.floor(Date.now() / 1000) + 3600, n: contador, ...carga }),
+    b64url({
+      aud: PROYECTO,
+      iss: `https://securetoken.google.com/${PROYECTO}`,
+      sub: 'uid123',
+      exp: Math.floor(Date.now() / 1000) + 3600,
+      n: contador,
+      ...carga,
+    }),
     'firma',
   ].join('.');
 }
@@ -65,14 +75,23 @@ const respuestaClaude = {
   ],
 };
 
-/** fetch simulado: Firestore (permitidos) y la API de Claude. */
-function simularFetch(opciones: { firestore?: number; claude?: number; cuerpoClaude?: unknown } = {}) {
+type DocSimulado = { estado: number; cuerpo?: unknown };
+
+/**
+ * fetch simulado: Firestore (permisos de la cuenta) y la API de Claude.
+ * `firestore` es la respuesta de las tres lecturas; `docs` cambia la de una colección.
+ */
+function simularFetch(
+  opciones: { firestore?: number; docs?: Partial<Record<'permitidos' | 'admins' | 'accesos', DocSimulado>>; claude?: number; cuerpoClaude?: unknown } = {},
+) {
   const llamadas: { url: string; init?: RequestInit }[] = [];
   const f = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
     const u = String(url);
     llamadas.push({ url: u, init });
     if (u.startsWith('https://firestore.googleapis.com/')) {
-      return new Response('{}', { status: opciones.firestore ?? 200 });
+      const coleccion = u.split('/documents/')[1]?.split('/')[0] as 'permitidos' | 'admins' | 'accesos';
+      const doc = opciones.docs?.[coleccion];
+      return new Response(JSON.stringify(doc?.cuerpo ?? {}), { status: doc?.estado ?? opciones.firestore ?? 200 });
     }
     if (u === 'https://api.anthropic.com/v1/messages') {
       return new Response(JSON.stringify(opciones.cuerpoClaude ?? respuestaClaude), { status: opciones.claude ?? 200 });
@@ -147,28 +166,56 @@ describe('sesión', () => {
     expect(r.status).toBe(401);
   });
 
-  it('403 si la cuenta no está habilitada (no existe permitidos/{uid})', async () => {
+  it('403 si la cuenta no tiene ningún permiso (no existen sus documentos)', async () => {
     const llamadas = simularFetch({ firestore: 404 });
     const r = await worker.fetch(pedido({ descripcion: 'x' }), env());
     expect(r.status).toBe(403);
     expect(llamadas.some((l) => l.url.includes('api.anthropic.com'))).toBe(false);
   });
 
-  it('consulta permitidos/{uid} con el token del usuario', async () => {
+  it('consulta permitidos, admins y accesos de la cuenta con el token del usuario', async () => {
     const llamadas = simularFetch();
     const t = token();
     await worker.fetch(pedido({ descripcion: 'x' }, { token: t }), env());
-    const fs = llamadas.find((l) => l.url.startsWith('https://firestore'));
-    expect(fs?.url).toBe(`https://firestore.googleapis.com/v1/projects/${PROYECTO}/databases/(default)/documents/permitidos/uid123`);
-    expect(new Headers(fs?.init?.headers).get('Authorization')).toBe(`Bearer ${t}`);
+    const fs = llamadas.filter((l) => l.url.startsWith('https://firestore'));
+    const base = `https://firestore.googleapis.com/v1/projects/${PROYECTO}/databases/(default)/documents`;
+    expect(fs.map((l) => l.url)).toEqual([`${base}/permitidos/uid123`, `${base}/admins/uid123`, `${base}/accesos/uid123`]);
+    for (const l of fs) expect(new Headers(l.init?.headers).get('Authorization')).toBe(`Bearer ${t}`);
+  });
+
+  it('calcula para una cuenta administradora aunque no esté en permitidos', async () => {
+    simularFetch({ firestore: 404, docs: { admins: { estado: 200 } } });
+    const r = await worker.fetch(pedido({ descripcion: 'x' }), env());
+    expect(r.status).toBe(200);
+  });
+
+  it('calcula si un admin le habilitó Comidas, y no si le habilitó otra sección', async () => {
+    const conComidas = { fields: { secciones: { arrayValue: { values: [{ stringValue: 'progreso' }, { stringValue: 'comidas' }] } } } };
+    simularFetch({ firestore: 404, docs: { accesos: { estado: 200, cuerpo: conComidas } } });
+    expect((await worker.fetch(pedido({ descripcion: 'x' }, { token: token({ sub: 'conComidas' }) }), env())).status).toBe(200);
+
+    const sinComidas = { fields: { secciones: { arrayValue: { values: [{ stringValue: 'progreso' }] } } } };
+    simularFetch({ firestore: 404, docs: { accesos: { estado: 200, cuerpo: sinComidas } } });
+    expect((await worker.fetch(pedido({ descripcion: 'x' }, { token: token({ sub: 'sinComidas' }) }), env())).status).toBe(403);
+
+    simularFetch({ firestore: 404, docs: { accesos: { estado: 200, cuerpo: { fields: {} } } } });
+    expect((await worker.fetch(pedido({ descripcion: 'x' }, { token: token({ sub: 'vacio' }) }), env())).status).toBe(403);
+  });
+
+  it('503 si Firestore falla al leer los permisos', async () => {
+    simularFetch({ docs: { accesos: { estado: 500 } } });
+    const r = await worker.fetch(pedido({ descripcion: 'x' }, { token: token({ sub: 'otraCuenta' }) }), env());
+    expect(r.status).toBe(503);
   });
 
   it('no vuelve a consultar Firestore con un token ya verificado', async () => {
     const llamadas = simularFetch();
     const t = token();
     await worker.fetch(pedido({ descripcion: 'x' }, { token: t }), env());
+    const antes = llamadas.filter((l) => l.url.startsWith('https://firestore')).length;
     await worker.fetch(pedido({ descripcion: 'y' }, { token: t }), env());
-    expect(llamadas.filter((l) => l.url.startsWith('https://firestore'))).toHaveLength(1);
+    expect(antes).toBe(3);
+    expect(llamadas.filter((l) => l.url.startsWith('https://firestore'))).toHaveLength(3);
   });
 });
 

@@ -4,11 +4,17 @@ import { diferenciaDias, esFechaIso, fechaLarga, lunesDe, rotuloSemana, sumarDia
 import { leerNumero, num, reloj } from './formato';
 import { OBJETIVOS_INICIALES, validarObjetivos, validarPerfil } from './perfil';
 import { mejoresSeries, promedioHora, resumenSemana, textoResumen, textoSerie } from './progreso';
+import { PLANTILLAS, RUTINA_PERSONAL, RUTINAS, textoDescanso } from '../datos/plantillas';
+import { EJERCICIOS } from '../datos/ejercicios';
+import { puede, sanearSecciones } from './acceso';
 import {
   diasHechosEnSemana,
   etapaActual,
+  listaDias,
   queTocaHoy,
   sugerencia,
+  sugerirRutinas,
+  textoSemana,
   totalConBarra,
   ultimaVez,
   valoresIniciales,
@@ -18,6 +24,7 @@ import { ErrorImportacion, sanearDia, sanearExportacion, sanearItem, sanearPerfi
 import type { Dia, ItemComida, Sesion } from './tipos';
 
 const O = OBJETIVOS_INICIALES;
+const R = RUTINA_PERSONAL;
 
 function item(p: Partial<ItemComida> = {}): ItemComida {
   return { id: 'x', n: 'Algo', por: '1', q: 1, p: 10, c: 5, g: 2, k: 100, src: 'lib', ...p };
@@ -179,16 +186,16 @@ describe('saneo', () => {
 
 describe('rutina', () => {
   it('dice qué toca cada día', () => {
-    expect(queTocaHoy('2026-11-05', '2026-11-09', [])).toEqual({ tipo: 'antes', inicio: '2026-11-09' });
-    const lunes = queTocaHoy('2026-11-09', '2026-11-09', []);
+    expect(queTocaHoy('2026-11-05', '2026-11-09', [], R)).toEqual({ tipo: 'antes', inicio: '2026-11-09' });
+    const lunes = queTocaHoy('2026-11-09', '2026-11-09', [], R);
     expect(lunes.tipo === 'entreno' && lunes.dia.id).toBe('torso-a');
-    expect(queTocaHoy('2026-11-11', '2026-11-09', [])).toMatchObject({ tipo: 'descanso', domingo: false });
-    expect(queTocaHoy('2026-11-15', '2026-11-09', [])).toMatchObject({ tipo: 'descanso', domingo: true });
+    expect(queTocaHoy('2026-11-11', '2026-11-09', [], R)).toMatchObject({ tipo: 'descanso', domingo: false });
+    expect(queTocaHoy('2026-11-15', '2026-11-09', [], R)).toMatchObject({ tipo: 'descanso', domingo: true });
   });
 
   it('el sábado sugiere los días que faltaron en la semana', () => {
     const hechas = [sesion('2026-11-09', 'torso-a', { 'press-banca': [{ peso: 5, reps: 10, t: '' }] }), sesion('2026-11-10', 'pierna-a', { hack: [null] })];
-    const r = queTocaHoy('2026-11-14', '2026-11-09', hechas);
+    const r = queTocaHoy('2026-11-14', '2026-11-09', hechas, R);
     expect(r.tipo).toBe('comodin');
     if (r.tipo === 'comodin') expect(r.pendientes.map((d) => d.id)).toEqual(['pierna-a', 'torso-b', 'pierna-b']);
     expect([...diasHechosEnSemana(hechas, '2026-11-09')]).toEqual(['torso-a']);
@@ -200,7 +207,7 @@ describe('rutina', () => {
   });
 
   it('aplica la doble progresión', () => {
-    const banca = diaPorId('torso-a')!.ex[0]!;
+    const banca = diaPorId(R, 'torso-a')!.ex[0]!;
     const s = (reps: number) => ({ peso: 5, reps, t: '' });
     expect(sugerencia(banca, [s(10), s(10), s(10)])).toBe('subir');
     expect(sugerencia(banca, [s(10), s(10), s(9)])).toBe('mas-reps');
@@ -208,7 +215,7 @@ describe('rutina', () => {
   });
 
   it('toma la última vez y arma los valores iniciales', () => {
-    const banca = diaPorId('torso-a')!.ex[0]!;
+    const banca = diaPorId(R, 'torso-a')!.ex[0]!;
     const sesiones = [
       sesion('2026-11-09', 'torso-a', { 'press-banca': [{ peso: 5, reps: 10, t: '' }, { peso: 5, reps: 9, t: '' }, null] }),
       sesion('2026-11-16', 'torso-a', { 'press-banca': [null, null, null] }),
@@ -260,7 +267,7 @@ describe('progreso', () => {
     d1.molestias = 'hombro derecho 2/10';
     const d2: Dia = { ...diaVacio('2026-11-10'), peso: 67.4 };
     const ses = [sesion('2026-11-09', 'torso-a', { 'press-banca': [{ peso: 5, reps: 10, t: '' }] })];
-    const r = resumenSemana('2026-11-09', [d1, d2], ses, O, '2026-11-12');
+    const r = resumenSemana('2026-11-09', [d1, d2], ses, O, '2026-11-12', R);
     expect(r.entrenamientos).toMatchObject({ hechos: 1, total: 4, dias: ['Torso A'], faltaron: ['Pierna A'] });
     expect(r.diasCargados).toBe(1);
     expect(r.diasConProteina).toBe(1);
@@ -276,10 +283,104 @@ describe('progreso', () => {
   });
 
   it('una semana sin datos se resume sin frases a medias', () => {
-    const r = resumenSemana('2026-11-09', [], [], O, '2026-11-12');
+    const r = resumenSemana('2026-11-09', [], [], O, '2026-11-12', R);
     const texto = textoResumen(r, '', O);
     expect(texto).toContain('Promedio por día cargado: sin datos');
     expect(texto).toContain('QUÉ ME COSTÓ: sin completar');
     expect(texto).not.toMatch(/sin datos de proteína/);
+  });
+});
+
+describe('rutinas armadas', () => {
+  const todas = [RUTINA_PERSONAL, ...PLANTILLAS];
+
+  it('cada rutina es coherente: días únicos, ids válidos y ejercicios de la biblioteca', () => {
+    const idsDias = new Set<string>();
+    for (const r of todas) {
+      expect(r.dias).toHaveLength(r.frecuencia);
+      expect(new Set(r.dias.map((d) => d.dow)).size, r.id).toBe(r.dias.length);
+      for (const d of r.dias) {
+        // El id del día va en el id del entrenamiento guardado (reglas de Firestore).
+        expect(d.id, r.id).toMatch(/^[a-z0-9-]{1,20}$/);
+        expect(idsDias.has(d.id), d.id).toBe(false);
+        idsDias.add(d.id);
+        expect(d.ex.length, d.id).toBeGreaterThan(2);
+        expect(new Set(d.ex.map((e) => e.id)).size, d.id).toBe(d.ex.length);
+        for (const e of d.ex) {
+          expect(EJERCICIOS[e.id], e.id).toBeDefined();
+          expect(e.r[0], e.id).toBeLessThanOrEqual(e.r[1]);
+          expect(e.s, e.id).toBeGreaterThan(0);
+        }
+      }
+    }
+    expect(Object.keys(RUTINAS)).toHaveLength(todas.length);
+  });
+
+  it('hay rutinas para cada objetivo y para cada cantidad de días', () => {
+    for (const o of ['musculo', 'fuerza', 'forma', 'gluteos'] as const) expect(PLANTILLAS.some((p) => p.objetivos.includes(o)), o).toBe(true);
+    for (const n of [2, 3, 4, 5, 6]) expect(PLANTILLAS.some((p) => p.frecuencia === n), String(n)).toBe(true);
+  });
+
+  it('sugiere por días y objetivo, o la más parecida si no hay', () => {
+    const tres = sugerirRutinas(PLANTILLAS, 3, 'gluteos');
+    expect(tres.exactas).toBe(true);
+    expect(tres.principales.map((r) => r.id)).toEqual(['gluteos-3']);
+    expect(tres.otras.every((r) => r.frecuencia === 3 && !r.objetivos.includes('gluteos'))).toBe(true);
+    const seis = sugerirRutinas(PLANTILLAS, 6, 'gluteos');
+    expect(seis.exactas).toBe(false);
+    expect(seis.principales.map((r) => r.id)).toEqual(['gluteos-4']);
+    // La rutina personal nunca se ofrece.
+    expect(sugerirRutinas([RUTINA_PERSONAL, ...PLANTILLAS], 4, 'musculo').principales.map((r) => r.id)).not.toContain('fase1');
+  });
+
+  it('dice qué toca con cualquier rutina y sugiere lo que faltó el día de comodín', () => {
+    const fb3 = RUTINAS['full-body-3']!;
+    expect(queTocaHoy('2026-11-18', '2026-11-16', [], fb3)).toMatchObject({ tipo: 'entreno', dia: { id: 'fb3-b' } });
+    expect(queTocaHoy('2026-11-17', '2026-11-16', [], fb3)).toMatchObject({ tipo: 'descanso', consejo: fb3.descanso });
+    const hecha = [sesion('2026-11-16', 'fb3-a', { 'sentadilla-barra': [{ peso: 20, reps: 8, t: '' }] })];
+    const sabado = queTocaHoy('2026-11-21', '2026-11-16', hecha, fb3);
+    expect(sabado.tipo === 'comodin' && sabado.pendientes.map((d) => d.id)).toEqual(['fb3-b', 'fb3-c']);
+    // Seis días: el domingo es descanso y no hay comodín.
+    expect(queTocaHoy('2026-11-22', '2026-11-16', [], RUTINAS['ppl-6']!)).toMatchObject({ tipo: 'descanso', domingo: true });
+  });
+
+  it('el resumen de la semana cuenta solo los días de la rutina actual', () => {
+    const fb3 = RUTINAS['full-body-3']!;
+    const ses = [
+      sesion('2026-11-16', 'fb3-a', { 'sentadilla-barra': [{ peso: 20, reps: 8, t: '' }] }),
+      sesion('2026-11-16', 'torso-a', { 'press-banca': [{ peso: 5, reps: 8, t: '' }] }),
+    ];
+    const r = resumenSemana('2026-11-16', [], ses, O, '2026-11-19', fb3);
+    expect(r.entrenamientos).toMatchObject({ hechos: 1, total: 3, faltaron: ['Full body B'] });
+  });
+
+  it('describe la semana y el descanso en palabras', () => {
+    expect(listaDias([5, 1, 3])).toBe('lunes, miércoles y viernes');
+    expect(textoSemana(RUTINA_PERSONAL)).toBe('Lunes, martes, jueves y viernes; sábado, comodín.');
+    expect(textoSemana(RUTINAS['ppl-6']!)).toBe('Lunes, martes, miércoles, jueves, viernes y sábado.');
+    expect([0, 45, 60, 90, 120, 150, 180].map(textoDescanso)).toEqual(['Sin pausa', '45 s', '1 min', '1,5 min', '2 min', '2–3 min', '3 min']);
+  });
+});
+
+describe('acceso', () => {
+  it('Rutina siempre; lo demás según la cuenta', () => {
+    const nueva = { admin: false, anterior: false, secciones: [] };
+    expect(puede(nueva, 'rutina')).toBe(true);
+    expect(puede(nueva, 'comidas')).toBe(false);
+    expect(puede({ ...nueva, secciones: ['comidas'] }, 'comidas')).toBe(true);
+    expect(puede({ ...nueva, admin: true }, 'plan')).toBe(true);
+    expect(puede({ ...nueva, anterior: true }, 'progreso')).toBe(true);
+  });
+
+  it('limpia las secciones guardadas', () => {
+    expect(sanearSecciones(['plan', 'rutina', 'comidas', 'x', 'plan'])).toEqual(['comidas', 'plan']);
+    expect(sanearSecciones('comidas')).toEqual([]);
+  });
+
+  it('el perfil guarda la rutina elegida y distingue los perfiles anteriores', () => {
+    expect(sanearPerfil({ nombre: 'Ana', rutina: 'full-body-3' }).rutina).toBe('full-body-3');
+    expect(sanearPerfil({ nombre: 'Ana', rutina: null }).rutina).toBeNull();
+    expect(sanearPerfil({ nombre: 'Ana', rutina: '<script>' }).rutina).toBeNull();
+    expect('rutina' in sanearPerfil({ nombre: 'Nahu' })).toBe(false);
   });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Anillos } from '../../componentes/Anillos';
 import { GraficoBarras, GraficoLinea } from '../../componentes/Graficos';
 import { Icono } from '../../componentes/Icono';
@@ -6,8 +6,8 @@ import { DIAS_HISTORIAL } from '../../config';
 import { deIso, diaMes, lunesDe, rotuloSemana, sumarDias } from '../../dominio/fechas';
 import { litros, num } from '../../dominio/formato';
 import { mejoresSeries, resumenSemana, serieSemana, textoResumen, textoSerie } from '../../dominio/progreso';
-import { DIAS_RUTINA, etiquetaUnidad } from '../../dominio/rutina';
-import type { Ejercicio, Objetivos } from '../../dominio/tipos';
+import { etiquetaUnidad } from '../../dominio/rutina';
+import type { Ejercicio, Objetivos, Rutina } from '../../dominio/tipos';
 import { useAvisos } from '../../estado/Avisos';
 import { useDatos } from '../../estado/Proveedor';
 import { useDias, useHoy, useNotaSemana, useSesiones, useTitulo } from '../../estado/hooks';
@@ -15,29 +15,30 @@ import estilos from './Progreso.module.css';
 
 const INICIALES = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-/** Todos los ejercicios de la rutina, sin repetir, con los básicos primero. */
-function ejerciciosParaGrafico(): Ejercicio[] {
+/** Todos los ejercicios con peso de la rutina, sin repetir, con los básicos primero. */
+function ejerciciosParaGrafico(rutina: Rutina | null): Ejercicio[] {
   const vistos = new Map<string, Ejercicio>();
-  for (const d of DIAS_RUTINA) for (const e of d.ex) if (!vistos.has(e.id) && e.unidad !== 'corporal') vistos.set(e.id, e);
+  for (const d of rutina?.dias ?? []) for (const e of d.ex) if (!vistos.has(e.id) && e.unidad !== 'corporal') vistos.set(e.id, e);
   return [...vistos.values()].sort((a, b) => Number(Boolean(b.basico)) - Number(Boolean(a.basico)));
 }
 
-const EJERCICIOS_GRAFICO = ejerciciosParaGrafico();
+/** Sin rutina elegida, el resumen se arma como si no hubiera días de entrenamiento. */
+const SIN_RUTINA: Rutina = { id: '', nombre: '', frecuencia: 0, objetivos: [], nivel: 'principiante', descripcion: '', comodin: [], descanso: '', dias: [] };
 
 export default function Progreso() {
   useTitulo('Progreso');
   const hoy = useHoy();
-  const { perfil } = useDatos();
+  const { perfil, rutina } = useDatos();
   const o = perfil.objetivos;
   const [lunes, setLunes] = useState(() => lunesDe(hoy));
   const [dias] = useDias(sumarDias(hoy, -DIAS_HISTORIAL), hoy);
   const [sesiones] = useSesiones(sumarDias(hoy, -DIAS_HISTORIAL));
-  const ejercicios = EJERCICIOS_GRAFICO;
+  const ejercicios = useMemo(() => ejerciciosParaGrafico(rutina), [rutina]);
   const [exId, setExId] = useState(ejercicios[0]?.id ?? '');
   const idSelect = useId();
   const esSemanaActual = lunes === lunesDe(hoy);
 
-  const r = resumenSemana(lunes, dias, sesiones, o, hoy);
+  const r = resumenSemana(lunes, dias, sesiones, o, hoy, rutina ?? SIN_RUTINA);
   const serie = serieSemana(lunes, dias, o);
 
   const ex = ejercicios.find((e) => e.id === exId);
@@ -91,9 +92,23 @@ export default function Progreso() {
             </dd>
           </div>
           <div>
-            <Anillos tam={34} grosor={5} anillos={[{ tono: 'proteina', valor: r.proteinaProm ?? 0, objetivo: o.proteina.obj, ok: r.proteinaProm !== null && r.proteinaProm >= o.proteina.min }]} />
+            <Anillos
+              tam={34}
+              grosor={5}
+              anillos={[
+                { tono: 'proteina', valor: r.proteinaProm ?? 0, objetivo: o.proteina.obj, ok: r.proteinaProm !== null && r.proteinaProm >= o.proteina.min },
+              ]}
+            />
             <dt>Proteína promedio</dt>
-            <dd className="num">{r.proteinaProm === null ? '—' : <>{num(r.proteinaProm)} <span>g</span></>}</dd>
+            <dd className="num">
+              {r.proteinaProm === null ? (
+                '—'
+              ) : (
+                <>
+                  {num(r.proteinaProm)} <span>g</span>
+                </>
+              )}
+            </dd>
           </div>
           <div>
             <Anillos tam={34} grosor={5} anillos={[{ tono: 'kcal', valor: r.kcalProm ?? 0, objetivo: o.kcal.min }]} />
@@ -108,10 +123,22 @@ export default function Progreso() {
           <div data-tono="azul">
             <Icono nombre="luna" tam={20} />
             <dt>Sueño</dt>
-            <dd className="num">{r.acostoProm && r.levantoProm ? <>{r.acostoProm} <span>a</span> {r.levantoProm}</> : '—'}</dd>
+            <dd className="num">
+              {r.acostoProm && r.levantoProm ? (
+                <>
+                  {r.acostoProm} <span>a</span> {r.levantoProm}
+                </>
+              ) : (
+                '—'
+              )}
+            </dd>
           </div>
           <div>
-            <Anillos tam={34} grosor={5} anillos={[{ tono: 'agua', valor: r.aguaProm ?? 0, objetivo: o.agua, ok: r.aguaProm !== null && r.aguaProm >= o.agua }]} />
+            <Anillos
+              tam={34}
+              grosor={5}
+              anillos={[{ tono: 'agua', valor: r.aguaProm ?? 0, objetivo: o.agua, ok: r.aguaProm !== null && r.aguaProm >= o.agua }]}
+            />
             <dt>Agua promedio</dt>
             <dd className="num">{r.aguaProm === null ? '—' : litros(r.aguaProm)}</dd>
           </div>
@@ -126,7 +153,12 @@ export default function Progreso() {
             <span className="tenue">Objetivo {o.proteina.obj} g</span>
           </div>
           <GraficoBarras
-            barras={serie.map((s) => ({ clave: s.fecha, etiqueta: `${INICIALES[deIso(s.fecha).getDay()]} ${deIso(s.fecha).getDate()}`, valor: s.p, destacada: s.fecha === hoy }))}
+            barras={serie.map((s) => ({
+              clave: s.fecha,
+              etiqueta: `${INICIALES[deIso(s.fecha).getDay()]} ${deIso(s.fecha).getDate()}`,
+              valor: s.p,
+              destacada: s.fecha === hoy,
+            }))}
             objetivo={{ valor: o.proteina.obj, texto: `${o.proteina.obj} g` }}
             minimoOk={o.proteina.min}
             descripcion={`Proteína por día de la ${rotuloSemana(lunes).toLowerCase()}`}
@@ -142,7 +174,12 @@ export default function Progreso() {
             </span>
           </div>
           <GraficoBarras
-            barras={serie.map((s) => ({ clave: s.fecha, etiqueta: `${INICIALES[deIso(s.fecha).getDay()]} ${deIso(s.fecha).getDate()}`, valor: s.k, destacada: s.fecha === hoy }))}
+            barras={serie.map((s) => ({
+              clave: s.fecha,
+              etiqueta: `${INICIALES[deIso(s.fecha).getDay()]} ${deIso(s.fecha).getDate()}`,
+              valor: s.k,
+              destacada: s.fecha === hoy,
+            }))}
             objetivo={{ valor: Math.round((o.kcal.min + o.kcal.max) / 2), texto: num(Math.round((o.kcal.min + o.kcal.max) / 2)) }}
             minimoOk={Number.POSITIVE_INFINITY}
             descripcion={`Calorías por día de la ${rotuloSemana(lunes).toLowerCase()}`}
@@ -194,7 +231,12 @@ export default function Progreso() {
           )}
           <h3 className="rotulo">Cintura</h3>
           {cinturas.length ? (
-            <GraficoLinea puntos={cinturas} descripcion={`Cintura: última ${num(cinturas.at(-1)!.y, 1)} cm`} formato={(v) => `${num(v, 1)} cm`} unidad="Cintura (cm)" />
+            <GraficoLinea
+              puntos={cinturas}
+              descripcion={`Cintura: última ${num(cinturas.at(-1)!.y, 1)} cm`}
+              formato={(v) => `${num(v, 1)} cm`}
+              unidad="Cintura (cm)"
+            />
           ) : (
             <p className="tenue">Sin mediciones todavía. Medila cada 2 semanas a la altura del ombligo, en ayunas.</p>
           )}
@@ -223,7 +265,17 @@ function ResumenRevision({ lunes, resumen, objetivos }: { lunes: string; resumen
   return <ResumenEditable lunes={lunes} guardada={notaSemana?.nota ?? ''} resumen={resumen} objetivos={objetivos} />;
 }
 
-function ResumenEditable({ lunes, guardada, resumen, objetivos }: { lunes: string; guardada: string; resumen: ReturnType<typeof resumenSemana>; objetivos: Objetivos }) {
+function ResumenEditable({
+  lunes,
+  guardada,
+  resumen,
+  objetivos,
+}: {
+  lunes: string;
+  guardada: string;
+  resumen: ReturnType<typeof resumenSemana>;
+  objetivos: Objetivos;
+}) {
   const { almacen } = useDatos();
   const { avisar } = useAvisos();
   const [borrador, setBorrador] = useState(guardada);
@@ -265,7 +317,14 @@ function ResumenEditable({ lunes, guardada, resumen, objetivos }: { lunes: strin
       <p className="tenue">Completá qué te costó, copiá el resumen y pegalo en el chat de coaching.</p>
       <div className="campo">
         <label htmlFor="resumen-nota">Qué te costó esta semana</label>
-        <textarea id="resumen-nota" className="entrada" maxLength={2000} value={borrador} onBlur={() => guardar(borrador)} onChange={(e) => setBorrador(e.target.value)} />
+        <textarea
+          id="resumen-nota"
+          className="entrada"
+          maxLength={2000}
+          value={borrador}
+          onBlur={() => guardar(borrador)}
+          onChange={(e) => setBorrador(e.target.value)}
+        />
       </div>
       <div className="campo">
         <label htmlFor="resumen-texto">Vista previa</label>
