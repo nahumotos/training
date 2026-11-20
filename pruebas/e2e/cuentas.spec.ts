@@ -85,6 +85,8 @@ test('crear una cuenta, elegir rutina y entrenar con solo Rutina habilitada', as
   await expect(page.getByRole('status').filter({ hasText: 'Rutina elegida: Glúteos y piernas · 3 días' })).toBeVisible();
   await expect(page).toHaveURL(/\/rutina$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Glúteos y piernas · 3 días');
+  // Vuelve arriba aunque la dirección no cambie (la elección se hizo en /rutina).
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
   await accesible(page);
 
   // Hoy (lunes) toca el primer día; se puede registrar una serie.

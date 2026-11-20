@@ -123,6 +123,10 @@ function TarjetaPlantilla({ rutina }: { rutina: Rutina }) {
     void almacen.guardarPerfil({ ...perfil, rutina: rutina.id, inicioRutina: hoy }).catch(() => undefined);
     avisar(`Rutina elegida: ${rutina.nombre}`);
     navegar('/rutina');
+    // La primera elección se hace en /rutina y la dirección no cambia: se vuelve arriba igual
+    // que al cambiar de pantalla.
+    window.scrollTo(0, 0);
+    document.getElementById('contenido')?.focus({ preventScroll: true });
   };
 
   return (
